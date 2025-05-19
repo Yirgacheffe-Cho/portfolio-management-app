@@ -1,58 +1,87 @@
-<<<<<<< HEAD
-# portfolio-management-app
-=======
-# React + TypeScript + Vite
+# Portfolio Management App 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 🔍 프로젝트 소개
 
-Currently, two official plugins are available:
+- 개인 포트폴리오 자산을 관리하고, 투자 현황을 시각적으로 분석하는 웹 애플리케이션
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 📦 **프로젝트 구조**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+src/
+├── components/             # 재사용 가능한 컴포넌트
+├── pages/                  # 페이지 컴포넌트
+├── services/               # Firebase 연동
+├── store/                  # Jotai 상태 관리
+└── App.tsx                 # 최상위 컴포넌트
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 **설치 및 실행 방법**
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 1️⃣ **패키지 설치**
+
+```bash
+npm install
 ```
->>>>>>> 0440fe7 (Init project)
+
+### 2️⃣ **Firebase Emulator 실행**
+
+```bash
+firebase emulators:start --config ./config/firebase/firebase.json
+```
+
+- **Emulator UI:** [http://localhost:4000](http://localhost:4000)
+- **Firestore:** [http://localhost:4000/firestore](http://localhost:4000/firestore)
+- **Auth:** [http://localhost:4000/auth](http://localhost:4000/auth)
+
+---
+
+### 3️⃣ **Vite 개발 서버 실행**
+
+```bash
+npm run dev
+```
+
+- **URL:** [http://localhost:3000](http://localhost:3000)
+
+---
+
+### 📝 **테스트 방법**
+
+1. PortfolioForm에 자산 정보를 입력
+2. "추가하기" 버튼 클릭
+3. Firebase Emulator UI에서 Firestore에 데이터 생성 확인
+
+---
+
+## ⚡️ **배포 방법**
+
+1. 빌드 실행
+
+   ```bash
+   npm run build
+   ```
+
+2. Firebase 배포
+   ```bash
+   firebase deploy --only hosting
+   ```
+
+---
+
+## 🛠 **기술 스택**
+
+- **React 19**
+- **Firebase** (Firestore, Auth, Hosting)
+- **Vite**
+- **Jotai** (상태 관리)
+
+---
+
+## 🔄 **CI/CD**
+
+- GitHub Actions를 통해 Firebase Hosting에 자동 배포
+- `main` 브랜치에 Push될 때마다 최신 상태로 자동 배포
