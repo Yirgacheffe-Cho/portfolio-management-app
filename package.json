@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config config/vite/vite.config.ts",
-    "build": "tsc -b && vite build --config config/vite/vite.config.ts",
+    "build": "tsc -b ./config/typescript/tsconfig.json && vite build --config config/vite/vite.config.ts",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --config config/linter/eslint.config.js",
     "preview": "vite preview --config config/vite/vite.config.ts",
     "format": "prettier --config config/linter/prettier.config.cjs --write \"src/**/*.{ts,tsx}\""
