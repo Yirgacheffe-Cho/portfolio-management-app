@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\""
+    "dev": "vite --config config/vite/vite.config.ts",
+    "build": "tsc -b && vite build --config config/vite/vite.config.ts",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --config config/linter/eslint.config.js",
+    "preview": "vite preview --config config/vite/vite.config.ts",
+    "format": "prettier --config config/linter/prettier.config.cjs --write \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
     "firebase": "^11.7.3",

@@ -1,7 +1,11 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-//import { getAnalytics } from 'firebase/analytics';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import {
+  getAuth,
+  connectAuthEmulator,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+// import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBk3VvV9Ek3ZMz03QjwysfZjveG3Tz19_M',
@@ -15,11 +19,15 @@ const firebaseConfig = {
 
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const provider = new GoogleAuthProvider();
 
-// Firebase Analytics 초기화
-//const analytics = getAnalytics(app);
-
-// Firebase 서비스들 내보내기
-export const db = getFirestore(app); // Firestore (데이터베이스)
-export const auth = getAuth(app); // Firebase Auth (인증)
-export const provider = new GoogleAuthProvider(); // Google Auth Provider
+// 🔥 **Emulator로 자동 연결 설정**
+if (window.location.hostname === 'localhost') {
+  console.log('🔥 Firebase Emulator 연결 중...');
+  // Firestore Emulator 연결
+  connectFirestoreEmulator(db, 'localhost', 8080);
+  // Auth Emulator 연결
+  connectAuthEmulator(auth, 'http://localhost:9099');
+}
