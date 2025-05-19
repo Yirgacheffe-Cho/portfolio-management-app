@@ -23,11 +23,14 @@ jobs:
 
       - name: Lint & Format check
         run: |
-          npm run lint              # 🔥 ESLint 실행
-          npm run format            # 🔥 Prettier 실행
+          npm run lint
+          npm run format
 
       - name: Build application
         run: npm run build
+
+      - name: Install Firebase CLI # ✅ Firebase CLI 설치 추가
+        run: npm install -g firebase-tools
 
       - name: Deploy to Firebase Hosting
         env:
