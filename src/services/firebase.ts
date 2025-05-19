@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getAnalytics } from 'firebase/analytics';
+//import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBk3VvV9Ek3ZMz03QjwysfZjveG3Tz19_M',
@@ -17,7 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Firebase Analytics 초기화
-const analytics = getAnalytics(app);
+//const analytics = getAnalytics(app);
 
 // Firebase 서비스들 내보내기
 export const db = getFirestore(app); // Firestore (데이터베이스)
