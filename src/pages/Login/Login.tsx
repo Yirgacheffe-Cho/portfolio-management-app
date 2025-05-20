@@ -1,8 +1,12 @@
+import React from 'react';
 import { signInWithPopup } from 'firebase/auth';
-import { auth, provider, db } from '../services/firebase';
+import { auth, provider, db } from '@/services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleLogin = async () => {
     try {
       // Firebase Auth로 Google 로그인 실행
@@ -16,10 +20,13 @@ const Login: React.FC = () => {
           displayName,
           email,
           photoURL,
+          createdAt: new Date(),
         });
 
-        alert(`로그인 성공! 환영합니다, ${displayName}`);
         console.log('Firestore에 사용자 정보가 저장되었습니다.');
+
+        // 👉 로그인 성공 시 메인 페이지로 이동
+        navigate('/app/dashboard');
       }
     } catch (error) {
       console.error('로그인 에러:', error);
@@ -27,8 +34,16 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div>
-      <button onClick={handleLogin}>구글로 로그인하기</button>
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="bg-white p-10 rounded-lg shadow-md text-center">
+        <h1 className="text-2xl font-bold mb-4">Portfolio Management App</h1>
+        <button
+          onClick={handleLogin}
+          className="bg-blue-500 text-white px-5 py-2 rounded-md hover:bg-blue-600 transition"
+        >
+          구글로 로그인하기
+        </button>
+      </div>
     </div>
   );
 };
