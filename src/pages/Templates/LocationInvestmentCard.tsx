@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import EditableInvestmentItem from './EditableInvestmentItem';
 import { Button } from '@/components/ui/button';
 import { InvestmentType, CurrencyType } from '@/types/asset';
 import type { InvestmentItem } from '@/types/asset';
-import { Plus } from 'lucide-react';
+import { Plus, Pencil, Check } from 'lucide-react';
 
 interface Props {
   locationName: string;
-  investments: InvestmentItem[]; // ✅ string → enum 기반 InvestmentItem 사용
+  investments: InvestmentItem[];
   onUpdate: (
     index: number,
     newType: InvestmentType,
@@ -15,6 +15,7 @@ interface Props {
   ) => void;
   onDelete: (index: number) => void;
   onAdd: () => void;
+  onRename: (newName: string) => void; // ✅ 추가
 }
 
 const LocationInvestmentCard: React.FC<Props> = ({
@@ -23,12 +24,46 @@ const LocationInvestmentCard: React.FC<Props> = ({
   onUpdate,
   onDelete,
   onAdd,
+  onRename,
 }) => {
+  const [editingName, setEditingName] = useState(false);
+  const [tempName, setTempName] = useState(locationName);
+
   return (
     <div className="rounded-xl bg-white border bg-muted p-6 shadow mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">{locationName}</h3>
-        {/* 위치 삭제 버튼 등 추가 가능 */}
+        {editingName ? (
+          <div className="flex gap-2 items-center w-full">
+            <input
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                onRename(tempName);
+                setEditingName(false);
+              }}
+            >
+              <Check className="w-4 h-4 text-green-600" />
+            </Button>
+          </div>
+        ) : (
+          <div className="flex justify-between items-center w-full">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {locationName}
+            </h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEditingName(true)}
+            >
+              <Pencil className="w-4 h-4 text-blue-600" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">

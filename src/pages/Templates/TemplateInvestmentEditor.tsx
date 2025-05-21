@@ -54,7 +54,15 @@ const TemplateInvestmentEditor = () => {
   const handleSave = () => {
     saveInvestments(investments);
   };
+  const handleRenameLocation = (oldName: string, newName: string) => {
+    if (!newName.trim() || newName === oldName) return;
 
+    const updatedInvestments: InvestmentMap = {};
+    for (const key in investments) {
+      updatedInvestments[key === oldName ? newName : key] = investments[key];
+    }
+    setInvestments(updatedInvestments);
+  };
   return (
     <div className="max-w-3xl mx-auto m-1">
       <div className="bg-white shadow-md rounded-xl p-6 space-y-6">
@@ -79,6 +87,7 @@ const TemplateInvestmentEditor = () => {
           onUpdateItem={handleUpdateItem}
           onDeleteItem={handleDeleteItem}
           onAddItem={handleAddItem}
+          onRenameLocation={handleRenameLocation}
         />
 
         <div className="pt-4 border-t mt-6">
