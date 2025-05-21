@@ -1,94 +1,104 @@
 import React, { useState } from 'react';
+import {
+  InvestmentType,
+  CurrencyType,
+  INVESTMENT_TYPE_LIST,
+  CURRENCY_TYPE_LIST,
+} from '@/types/asset';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Check, Pencil, Trash2, X } from 'lucide-react';
+import { EnumSelect } from '@/components/common/EnumSelect'; // ✅ 확장 셀렉트 사용
 
 interface Props {
-  type: string;
-  currency: string;
-  onSave: (newType: string, newCurrency: string) => void;
+  type: InvestmentType;
+  currency: CurrencyType;
+  onSave: (newType: InvestmentType, newCurrency: CurrencyType) => void;
   onDelete: () => void;
 }
 
-const typeOptions = ['현금', '주식', '코인', '금'];
-const currencyOptions = ['KRW', 'USD', 'BTC'];
-
-const InvestmentItem: React.FC<Props> = ({
+const EditableInvestmentItem: React.FC<Props> = ({
   type,
   currency,
   onSave,
   onDelete,
 }) => {
   const [editMode, setEditMode] = useState(false);
-  const [tempType, setTempType] = useState(type);
-  const [tempCurrency, setTempCurrency] = useState(currency);
+  const [tempType, setTempType] = useState<InvestmentType>(type);
+  const [tempCurrency, setTempCurrency] = useState<CurrencyType>(currency);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="bg-white border rounded-lg px-4 py-2 shadow-sm">
       {editMode ? (
-        <>
-          <select
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          {/* 자산 유형 선택 */}
+          <EnumSelect
             value={tempType}
-            onChange={(e) => setTempType(e.target.value)}
-            className="border px-2 py-1 rounded text-sm"
-          >
-            {typeOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            options={INVESTMENT_TYPE_LIST}
+            onChange={setTempType}
+            placeholder="자산 유형 선택"
+            label="유형"
+          />
 
-          <select
+          {/* 통화 선택 */}
+          <EnumSelect
             value={tempCurrency}
-            onChange={(e) => setTempCurrency(e.target.value)}
-            className="border px-2 py-1 rounded text-sm"
-          >
-            {currencyOptions.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+            options={CURRENCY_TYPE_LIST}
+            onChange={setTempCurrency}
+            placeholder="통화 선택"
+            label="통화"
+          />
 
-          <button
-            className="text-green-600 text-sm"
-            onClick={() => {
-              onSave(tempType, tempCurrency);
-              setEditMode(false);
-            }}
-            title="확인"
-          >
-            ✔
-          </button>
-          <button
-            className="text-gray-500 text-sm"
-            onClick={() => setEditMode(false)}
-            title="취소"
-          >
-            ✖
-          </button>
-        </>
+          {/* 저장 / 취소 버튼 */}
+          <div className="flex gap-1 ml-auto pt-5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                onSave(tempType, tempCurrency);
+                setEditMode(false);
+              }}
+            >
+              <Check className="w-4 h-4 text-green-600" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEditMode(false)}
+            >
+              <X className="w-4 h-4 text-gray-400" />
+            </Button>
+          </div>
+        </div>
       ) : (
-        <>
-          <span className="text-sm text-gray-800">
-            {type} / {currency}
-          </span>
-          <button
-            className="text-blue-600 text-sm"
-            onClick={() => setEditMode(true)}
-            title="수정"
-          >
-            ✏
-          </button>
-          <button
-            className="text-red-500 text-sm"
-            onClick={onDelete}
-            title="삭제"
-          >
-            🗑
-          </button>
-        </>
+        <div className="flex items-center justify-between gap-3">
+          {/* 현재 표시 중인 자산 */}
+          <div className="flex gap-2">
+            <Badge className="bg-indigo-100 text-indigo-800 text-sm px-3 py-1">
+              {type}
+            </Badge>
+            <Badge className="bg-gray-100 text-gray-800 text-sm px-3 py-1">
+              {currency}
+            </Badge>
+          </div>
+
+          {/* 수정 / 삭제 버튼 */}
+          <div className="flex gap-1 ml-auto">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEditMode(true)}
+            >
+              <Pencil className="w-4 h-4 text-blue-600" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onDelete}>
+              <Trash2 className="w-4 h-4 text-red-500" />
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
-export default InvestmentItem;
+export default EditableInvestmentItem;

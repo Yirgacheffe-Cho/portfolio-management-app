@@ -93,7 +93,7 @@ const SavingsSettings = () => {
   if (!template) return <p className="text-sm text-center">불러오는 중...</p>;
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
+    <div className="max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6 m-1">
       <h2 className="text-2xl font-bold text-gray-800">기본 자산 설정</h2>
 
       {/* 목표 자산 */}

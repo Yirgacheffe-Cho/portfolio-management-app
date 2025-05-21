@@ -1,22 +1,18 @@
 import React from 'react';
 import LocationInvestmentCard from './LocationInvestmentCard';
-
-interface InvestmentItem {
-  type: string;
-  currency: string;
-}
-
-type InvestmentMap = {
-  [location: string]: InvestmentItem[];
-};
+import type {
+  InvestmentMap,
+  InvestmentType,
+  CurrencyType,
+} from '@/types/asset';
 
 interface Props {
   locations: InvestmentMap;
   onUpdateItem: (
     loc: string,
     index: number,
-    type: string,
-    currency: string,
+    type: InvestmentType,
+    currency: CurrencyType,
   ) => void;
   onDeleteItem: (loc: string, index: number) => void;
   onAddItem: (loc: string) => void;
