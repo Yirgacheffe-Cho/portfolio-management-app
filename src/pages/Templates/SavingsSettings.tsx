@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import { templateAtom } from '@/store/template/templateAtom';
 import { AssetType, ASSET_TYPE_LIST } from '@/types/asset';

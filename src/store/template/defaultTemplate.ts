@@ -11,6 +11,6 @@ export const defaultTemplate: TemplateMeta = {
     [AssetType.GOLD]: 25 / 100,
     [AssetType.COIN]: 25 / 100,
   },
-  locations: [],
+  //locations: [],
   investments: {},
 };
