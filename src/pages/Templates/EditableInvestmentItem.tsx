@@ -33,20 +33,20 @@ const EditableInvestmentItem: React.FC<Props> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* 자산 유형 선택 */}
           <EnumSelect
+            className="min-w-[140px]"
             value={tempType}
             options={INVESTMENT_TYPE_LIST}
             onChange={setTempType}
             placeholder="자산 유형 선택"
-            label="유형"
           />
 
           {/* 통화 선택 */}
           <EnumSelect
+            className="min-w-[140px]"
             value={tempCurrency}
             options={CURRENCY_TYPE_LIST}
             onChange={setTempCurrency}
             placeholder="통화 선택"
-            label="통화"
           />
 
           {/* 저장 / 취소 버튼 */}

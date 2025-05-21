@@ -15,6 +15,7 @@ interface EnumSelectProps<T extends string> {
   placeholder?: string;
   description?: string;
   iconMap?: Partial<Record<T, React.ReactNode>>; // 아이콘 매핑
+  className?: string; // ✅ 선택창 커스텀 너비용 className 추가
 }
 
 export const EnumSelect = <T extends string>({
@@ -25,6 +26,7 @@ export const EnumSelect = <T extends string>({
   placeholder = '선택...',
   description,
   iconMap = {},
+  className, // ✅ 전달 받기
 }: EnumSelectProps<T>) => {
   return (
     <div className="space-y-1">
@@ -33,7 +35,7 @@ export const EnumSelect = <T extends string>({
       )}
 
       <Select value={value} onValueChange={(val) => onChange(val as T)}>
-        <SelectTrigger className="w-full h-9">
+        <SelectTrigger className={`w-full h-9 ${className ?? ''}`}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
