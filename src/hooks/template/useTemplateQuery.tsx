@@ -13,6 +13,6 @@ export const useTemplateQuery = () => {
       const snap = await getDoc(ref);
       return snap.exists() ? snap.data() : null;
     },
-    enabled: !!auth.currentUser, // 로그인 이후만 작동
+    enabled: !!auth.currentUser,
   });
 };

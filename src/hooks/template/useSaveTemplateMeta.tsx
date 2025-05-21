@@ -1,21 +1,31 @@
+// src/hooks/template/useSaveTemplateGoal.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/services/firebase';
-import type { TemplateMeta } from '@/types/template';
+import type { TemplateMeta } from '@/store/template/templateAtom';
 
-export const useSaveTemplateMeta = () => {
+/**
+ * 💾 템플릿의 목표 금액, 저축률, 자산 분배를 Firestore에 저장하는 훅
+ * - merge: true 옵션으로 다른 필드는 유지
+ */
+export const useSaveTemplateGoal = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: TemplateMeta) => {
+    mutationFn: async (
+      data: Pick<
+        TemplateMeta,
+        'savingsGoal' | 'savingRate' | 'targetAllocation'
+      >,
+    ) => {
       const uid = auth.currentUser?.uid;
       if (!uid) throw new Error('로그인이 필요합니다.');
 
       const ref = doc(db, 'users', uid, 'assetTemplates', 'default');
-      await setDoc(ref, data, { merge: true }); // ⚠ 기존 investments 등 유지
+      await setDoc(ref, data, { merge: true }); // ✅ 부분 필드만 병합 저장
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['template'] });
+      queryClient.invalidateQueries({ queryKey: ['template'] }); // ✅ 템플릿 refetch
     },
   });
 };
