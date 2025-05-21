@@ -14,14 +14,15 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "@components/*": ["src/components/*"],
       "@pages/*": ["src/pages/*"],
       "@services/*": ["src/services/*"],
       "@store/*": ["src/store/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@/*": ["src/*"]
+      "@types/*": ["src/types/*"],
+      "@/*": ["./src/*"]
     },
     /* Linting */
     "strict": true,
@@ -31,5 +32,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src", "src/pages/Templates/.tsx"]
 }

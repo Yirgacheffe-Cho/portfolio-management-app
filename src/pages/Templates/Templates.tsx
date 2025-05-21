@@ -1,12 +1,16 @@
-import React from 'react';
+import SavingsSettings from '@/pages/Templates/SavingsSettings';
+import TemplateInvestmentEditor from '@/pages/Templates/TemplateInvestmentEditor';
 
-const Templates: React.FC = () => {
+const TemplateSettings = () => {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">템플릿 만들기</h1>
-      <p>여기서 자산 템플릿을 설정하고 관리할 수 있습니다.</p>
+    <div>
+      <SavingsSettings></SavingsSettings>
+      <div className="p-6">
+        <h2 className="text-2xl font-bold mb-4">투자 자산 위치 설정</h2>
+        <TemplateInvestmentEditor />
+      </div>
     </div>
   );
 };
 
-export default Templates;
+export default TemplateSettings;
