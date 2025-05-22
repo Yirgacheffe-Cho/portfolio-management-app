@@ -6,34 +6,37 @@ import TemplateInvestmentEditor from '@/pages/Templates/TemplateInvestmentEditor
 import { useTemplateInitializer } from '@/hooks/template/useTemplateInitializer';
 
 const TemplateSettings = () => {
-  useTemplateInitializer(); // ✅ 최초 진입 시 템플릿 불러오기
+  // ✅ 템플릿 데이터를 불러오는 커스텀 훅 (단 한 번 호출)
+  useTemplateInitializer();
+
   return (
-    <Tabs defaultValue="savings" className="space-y-1">
-      <TabsList className="grid w-full grid-cols-2 border rounded-lg bg-muted p-1">
-        <TabsTrigger
-          value="savings"
-          className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-sm font-medium"
-        >
-          목표 및 자산 분배
-        </TabsTrigger>
-        <TabsTrigger
-          value="investment"
-          className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-sm font-medium"
-        >
-          자산 보관처 설정
-        </TabsTrigger>
-      </TabsList>
+    <Suspense fallback={<Spinner className="mt-8" />}>
+      {/* ✅ 공통 Suspense 처리: 동일 데이터 기반의 하위 컴포넌트를 묶음 */}
+      <Tabs defaultValue="savings" className="space-y-1">
+        <TabsList className="grid w-full grid-cols-2 border rounded-lg bg-muted p-1">
+          <TabsTrigger
+            value="savings"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-sm font-medium"
+          >
+            목표 및 자산 분배
+          </TabsTrigger>
+          <TabsTrigger
+            value="investment"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md text-sm font-medium"
+          >
+            자산 보관처 설정
+          </TabsTrigger>
+        </TabsList>
 
-      {/* 여백 추가 */}
+        <TabsContent value="savings">
+          <SavingsSettings />
+        </TabsContent>
 
-      <TabsContent value="savings">
-        <SavingsSettings />
-      </TabsContent>
-
-      <TabsContent value="investment">
-        <TemplateInvestmentEditor />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="investment">
+          <TemplateInvestmentEditor />
+        </TabsContent>
+      </Tabs>
+    </Suspense>
   );
 };
 
