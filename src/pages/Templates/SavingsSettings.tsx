@@ -1,3 +1,12 @@
+/**
+ * ✅ SavingsSettings (최종 버전)
+ *
+ * 사용자 자산 목표 및 분배 비율 설정 컴포넌트
+ * - templateAtom 기반 초기값 사용
+ * - shadcn/ui 스타일 + lucide 아이콘 제한적 활용
+ * - 각 입력은 0~100 사이 값만 허용, 총합 100% 초과 시 무시
+ */
+
 import { useEffect, useState, useTransition } from 'react';
 import { useAtom } from 'jotai';
 import { templateAtom } from '@/store/template/templateAtom';
@@ -5,19 +14,14 @@ import { AssetType, ASSET_TYPE_LIST } from '@/types/asset';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSaveTemplateGoal } from '@/hooks/template/useSaveTemplateMeta';
 import { useSavingsForecast } from '@/hooks/template/useSavingsForecast';
 import { useDelayedPending } from '@/hooks/common/useDelayedPending';
 import { formatKorean } from '@/utils/formatKorean';
 
-/**
- * ✅ SavingsSettings
- *
- * 사용자 자산 목표 및 분배 비율 설정 컴포넌트
- * - templateAtom 기반 초기값
- * - 각 항목은 0~100 범위 내 입력만 허용
- * - 총합 100% 초과 시 입력 무시
- */
+import { Settings, PieChart, BarChart3, Edit, Check } from 'lucide-react';
+
 const SavingsSettings = () => {
   const [template] = useAtom(templateAtom);
   const saveGoal = useSaveTemplateGoal();
@@ -36,7 +40,7 @@ const SavingsSettings = () => {
   const [isPending, startTransition] = useTransition();
   const isSpinnerVisible = useDelayedPending(isPending, 150);
 
-  // 📌 초기값 세팅
+  // 📌 초기 상태 설정
   useEffect(() => {
     if (!template) return;
 
@@ -59,19 +63,13 @@ const SavingsSettings = () => {
   );
   const isValid = total === 100;
 
-  // 📊 예측 결과 계산
   const forecast = useSavingsForecast({
     savingsGoal: Number(savingsGoalInput || '0'),
     savingRate: Number(savingRateInput || '0'),
     allocations,
   });
 
-  /**
-   * 🧠 자산 항목 변경 핸들러
-   * - 숫자만 허용
-   * - 100 초과 값 무시
-   * - 총합 100 초과되면 입력 무시
-   */
+  // 📌 자산 항목 입력 핸들러
   const handleAllocationChange = (key: AssetType, val: string) => {
     if (!/^\d*$/.test(val)) return;
 
@@ -83,12 +81,12 @@ const SavingsSettings = () => {
       (acc, v) => acc + Number(v || '0'),
       0,
     );
-
     if (nextTotal > 100) return;
 
     startTransition(() => setAllocations(next));
   };
 
+  // 📌 저장 핸들러
   const handleSave = () => {
     if (!isValid) return;
 
@@ -111,127 +109,141 @@ const SavingsSettings = () => {
     );
   };
 
-  if (!template) return <p className="text-sm text-center">불러오는 중...</p>;
+  if (!template) {
+    return (
+      <p className="text-sm text-muted-foreground text-center">
+        불러오는 중...
+      </p>
+    );
+  }
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6 m-1">
-      <h2 className="text-2xl font-bold text-gray-800">기본 자산 설정</h2>
+    <Card className="max-w-2xl mx-auto p-6 space-y-6">
+      <CardHeader className="flex items-center gap-2">
+        <Settings className="w-5 h-5 text-muted-foreground" />
+        <CardTitle className="text-2xl">기본 자산 설정</CardTitle>
+      </CardHeader>
 
-      {/* 목표 자산 */}
-      <div className="space-y-1">
-        <Label>1년 목표 자산</Label>
-        <Input
-          disabled={!isEditMode}
-          inputMode="numeric"
-          value={savingsGoalInput}
-          onChange={(e) => {
-            if (/^\d*$/.test(e.target.value)) {
-              setSavingsGoalInput(e.target.value);
-            }
-          }}
-        />
-        <p className="text-sm text-gray-500">
-          {formatKorean(Number(savingsGoalInput || '0'))}
-        </p>
-      </div>
-
-      {/* 저축률 */}
-      <div className="space-y-1">
-        <Label>저축률 (%)</Label>
-        <Input
-          disabled={!isEditMode}
-          type="number" // 숫자 전용 처리 (브라우저가 min/max 적용함)
-          min={0}
-          max={100}
-          value={savingRateInput}
-          onChange={(e) => {
-            const val = e.target.value;
-            // 숫자 아닌 경우 무시
-            if (!/^\d*$/.test(val)) return;
-            const num = Number(val);
-            // 100 초과하면 무시
-            if (num > 100) return;
-            setSavingRateInput(val);
-          }}
-        />
-      </div>
-
-      {/* 자산 분배 */}
-      <div className="space-y-1">
-        <Label>자산 분배 (%)</Label>
-        <div className="grid grid-cols-2 gap-4">
-          {ASSET_TYPE_LIST.map((key) => (
-            <div key={key}>
-              <Label>{key}</Label>
-              <Input
-                disabled={!isEditMode}
-                type="number" // 숫자 전용 처리 (브라우저가 min/max 적용함)
-                min={0}
-                max={100}
-                value={allocations[key]}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  // 숫자 아닌 경우 무시
-                  if (!/^\d*$/.test(val)) return;
-                  const num = Number(val);
-                  // 100 초과하면 무시
-                  if (num > 100) return;
-                  handleAllocationChange(key, e.target.value);
-                }}
-              />
-            </div>
-          ))}
+      <CardContent className="space-y-6">
+        {/* 목표 자산 입력 */}
+        <div className="space-y-1">
+          <Label className="flex items-center gap-1 text-base">
+            1년 목표 자산
+          </Label>
+          <Input
+            disabled={!isEditMode}
+            inputMode="numeric"
+            value={savingsGoalInput}
+            onChange={(e) => {
+              if (/^\d*$/.test(e.target.value)) {
+                setSavingsGoalInput(e.target.value);
+              }
+            }}
+          />
+          <p className="text-sm text-muted-foreground tabular-nums">
+            {formatKorean(Number(savingsGoalInput || '0'))}
+          </p>
         </div>
-        <p className="text-sm mt-1 text-gray-400">
-          ⚠ 현재 합계: {total}% (100%이어야 합니다)
-        </p>
-      </div>
 
-      {/* 예측 결과 */}
-      <div>
-        <Label className="mb-2">📊 예상 자산 분배 금액</Label>
-        <div className="relative min-h-[80px]">
-          <div
-            className={`bg-muted/50 p-4 rounded-md border text-sm text-gray-700 space-y-1 transition-opacity duration-200 ${
-              isPending ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
-            {forecast.map((item) => (
-              <div key={item.label}>
-                {item.label}: {formatKorean(item.amount)}
+        {/* 저축률 입력 */}
+        <div className="space-y-1">
+          <Label className="flex items-center gap-1 text-base">
+            저축률 (%)
+          </Label>
+          <Input
+            disabled={!isEditMode}
+            type="number"
+            min={0}
+            max={100}
+            value={savingRateInput}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (!/^\d*$/.test(val)) return;
+              const num = Number(val);
+              if (num > 100) return;
+              setSavingRateInput(val);
+            }}
+          />
+        </div>
+
+        {/* 자산 분배 */}
+        <div className="space-y-2 border rounded-lg p-4 bg-muted/10">
+          <Label className="flex items-center gap-1 text-base">
+            <PieChart className="w-4 h-4 text-muted-foreground" />
+            자산 분배 (%)
+          </Label>
+
+          <div className="grid grid-cols-2 gap-4">
+            {ASSET_TYPE_LIST.map((key) => (
+              <div key={key}>
+                <Label>{key}</Label>
+                <Input
+                  disabled={!isEditMode}
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={allocations[key]}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (!/^\d*$/.test(val)) return;
+                    if (Number(val) > 100) return;
+                    handleAllocationChange(key, val);
+                  }}
+                />
               </div>
             ))}
           </div>
-          <p
-            className={`absolute top-4 left-4 text-sm text-gray-500 transition-opacity duration-200 ${
-              isSpinnerVisible ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            계산 중...
+
+          <p className="text-sm text-muted-foreground">
+            ⚠ 현재 합계: {total}% (100%이어야 합니다)
           </p>
         </div>
-      </div>
 
-      {/* 저장/수정 버튼 */}
-      <div className="pt-4 flex justify-center">
-        {isEditMode ? (
+        {/* 예측 결과 */}
+        <div className="space-y-1">
+          <Label className="flex items-center gap-1 text-base">
+            <BarChart3 className="w-4 h-4 text-muted-foreground" />
+            예상 자산 분배 금액
+          </Label>
+          <div className="relative min-h-[80px]">
+            <div
+              className={`bg-muted/50 p-4 rounded-md border text-sm text-foreground space-y-1 transition-opacity duration-200 ${
+                isPending ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
+              {forecast.map((item) => (
+                <div key={item.label} className="tabular-nums">
+                  {item.label}: {formatKorean(item.amount)}
+                </div>
+              ))}
+            </div>
+            <p
+              className={`absolute top-4 left-4 text-sm text-muted-foreground transition-opacity duration-200 ${
+                isSpinnerVisible ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              계산 중...
+            </p>
+          </div>
+        </div>
+
+        {/* 저장 / 수정 버튼 */}
+        <div className="pt-4">
           <Button
-            onClick={handleSave}
-            disabled={!isValid}
-            className="w-full max-w-xs"
+            onClick={isEditMode ? handleSave : () => setIsEditMode(true)}
+            disabled={isEditMode && !isValid}
+            className="w-full max-w-xs mx-auto block flex items-center justify-center gap-2"
           >
-            저장하기
+            {isEditMode ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <Edit className="w-4 h-4" />
+            )}
+            {isEditMode ? '저장하기' : '수정하기'}
           </Button>
-        ) : (
-          <Button
-            onClick={() => setIsEditMode(true)}
-            className="w-full max-w-xs"
-          >
-            수정하기
-          </Button>
-        )}
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
