@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+/**
+ * ✅ EditableInvestmentItem
+ *
+ * 투자 항목 한 개의 정보를 표시/수정할 수 있는 카드형 UI
+ * - shadcn/ui 스타일 기반
+ * - editMode 여부에 따라 표시 형태 변경
+ */
+
+import { useState } from 'react';
 import {
   InvestmentType,
   CurrencyType,
   INVESTMENT_TYPE_LIST,
   CURRENCY_TYPE_LIST,
 } from '@/types/asset';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { EnumSelect } from '@/components/common/EnumSelect';
 import { Check, Pencil, Trash2, X } from 'lucide-react';
-import { EnumSelect } from '@/components/common/EnumSelect'; // ✅ 확장 셀렉트 사용
 
 interface Props {
   type: InvestmentType;
@@ -28,7 +37,7 @@ const EditableInvestmentItem: React.FC<Props> = ({
   const [tempCurrency, setTempCurrency] = useState<CurrencyType>(currency);
 
   return (
-    <div className="bg-white border rounded-lg px-4 py-2 shadow-sm">
+    <div className="bg-white border rounded-lg px-4 py-3 shadow-sm">
       {editMode ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* 자산 유형 선택 */}
@@ -49,8 +58,8 @@ const EditableInvestmentItem: React.FC<Props> = ({
             placeholder="통화 선택"
           />
 
-          {/* 저장 / 취소 버튼 */}
-          <div className="flex gap-1 ml-auto pt-5">
+          {/* 저장/취소 버튼 */}
+          <div className="flex gap-1 ml-auto pt-4">
             <Button
               variant="ghost"
               size="icon"
@@ -72,7 +81,6 @@ const EditableInvestmentItem: React.FC<Props> = ({
         </div>
       ) : (
         <div className="flex items-center justify-between gap-3">
-          {/* 현재 표시 중인 자산 */}
           <div className="flex gap-2">
             <Badge className="bg-indigo-100 text-indigo-800 text-sm px-3 py-1">
               {type}
@@ -82,7 +90,6 @@ const EditableInvestmentItem: React.FC<Props> = ({
             </Badge>
           </div>
 
-          {/* 수정 / 삭제 버튼 */}
           <div className="flex gap-1 ml-auto">
             <Button
               variant="ghost"

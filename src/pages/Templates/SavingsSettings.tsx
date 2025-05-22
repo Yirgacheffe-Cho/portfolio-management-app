@@ -118,7 +118,7 @@ const SavingsSettings = () => {
   }
 
   return (
-    <Card className="max-w-2xl mx-auto p-6 space-y-6">
+    <Card className="max-w-3xl mx-auto p-6 space-y-6">
       <CardHeader className="flex items-center gap-2">
         <Settings className="w-5 h-5 text-muted-foreground" />
         <CardTitle className="text-2xl">기본 자산 설정</CardTitle>
@@ -232,7 +232,7 @@ const SavingsSettings = () => {
           <Button
             onClick={isEditMode ? handleSave : () => setIsEditMode(true)}
             disabled={isEditMode && !isValid}
-            className="w-full max-w-xs mx-auto block flex items-center justify-center gap-2"
+            className="w-full max-w-xs mx-auto flex items-center justify-center gap-2"
           >
             {isEditMode ? (
               <Check className="w-4 h-4" />

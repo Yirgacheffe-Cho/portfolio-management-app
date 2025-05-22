@@ -3,8 +3,8 @@ import EditableInvestmentItem from './EditableInvestmentItem';
 import { Button } from '@/components/ui/button';
 import { InvestmentType, CurrencyType } from '@/types/asset';
 import type { InvestmentItem } from '@/types/asset';
-import { Plus, Pencil, Check } from 'lucide-react';
-
+import { Landmark, Pencil, Check, PlusCircle } from 'lucide-react';
+// ...
 interface Props {
   locationName: string;
   investments: InvestmentItem[];
@@ -30,10 +30,11 @@ const LocationInvestmentCard: React.FC<Props> = ({
   const [tempName, setTempName] = useState(locationName);
 
   return (
-    <div className="rounded-xl bg-white border bg-muted p-6 shadow mb-6">
+    <div className="rounded-xl border bg-muted p-6 shadow mb-6">
       <div className="flex justify-between items-center mb-4">
         {editingName ? (
           <div className="flex gap-2 items-center w-full">
+            <Landmark className="w-4 h-4 text-muted-foreground" />
             <input
               value={tempName}
               onChange={(e) => setTempName(e.target.value)}
@@ -52,9 +53,12 @@ const LocationInvestmentCard: React.FC<Props> = ({
           </div>
         ) : (
           <div className="flex justify-between items-center w-full">
-            <h3 className="text-lg font-semibold text-gray-800">
-              {locationName}
-            </h3>
+            <div className="flex items-center gap-2">
+              <Landmark className="w-4 h-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold text-gray-800">
+                {locationName}
+              </h3>
+            </div>
             <Button
               variant="ghost"
               size="icon"
@@ -80,7 +84,7 @@ const LocationInvestmentCard: React.FC<Props> = ({
 
       <div className="mt-5">
         <Button variant="outline" size="sm" onClick={onAdd}>
-          <Plus className="w-4 h-4 mr-1" />
+          <PlusCircle className="w-4 h-4 mr-1" />
           자산 항목 추가
         </Button>
       </div>
