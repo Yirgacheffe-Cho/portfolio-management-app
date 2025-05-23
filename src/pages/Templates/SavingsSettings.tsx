@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSaveTemplateGoal } from '@/hooks/template/useSaveTemplateMeta';
+import { useSaveTemplateMeta } from '@/hooks/template/useSaveTemplateMeta';
 import { useSavingsForecast } from '@/hooks/template/useSavingsForecast';
 import { useDelayedPending } from '@/hooks/common/useDelayedPending';
 import { formatKorean } from '@/utils/formatKorean';
@@ -24,7 +24,7 @@ import { Settings, PieChart, BarChart3, Edit, Check } from 'lucide-react';
 
 const SavingsSettings = () => {
   const [template] = useAtom(templateAtom);
-  const saveGoal = useSaveTemplateGoal();
+  const saveGoal = useSaveTemplateMeta();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [savingsGoalInput, setSavingsGoalInput] = useState('');

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import EditableInvestmentItem from './EditableInvestmentItem';
 import { Button } from '@/components/ui/button';
 import { InvestmentType, CurrencyType } from '@/types/asset';
-import type { InvestmentItem } from '@/types/asset';
+import type { AssetRecord } from '@/types/asset';
 import { Landmark, Pencil, Check, PlusCircle } from 'lucide-react';
 // ...
 interface Props {
   locationName: string;
-  investments: InvestmentItem[];
+  investments: AssetRecord[];
   onUpdate: (
     index: number,
     newType: InvestmentType,

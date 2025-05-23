@@ -2,7 +2,7 @@
 
 import { atom } from 'jotai';
 import type { AssetType } from '@/types/asset';
-import type { InvestmentType, CurrencyType } from '@/types/asset';
+import type { AssetRecord } from '@/types/asset';
 
 /**
  * 🔢 사용자 템플릿 전체 구조
@@ -15,11 +15,23 @@ export interface TemplateMeta {
   //locations?: string[];
   investments?: Record<
     string, // 위치 이름 (ex: "우리은행")
-    {
-      type: InvestmentType;
-      currency: CurrencyType;
-    }[]
+    AssetRecord[]
   >;
 }
+/**
+ * ✅ template.investments 만 별도로 다루는 파생 atom
+ */
 
+export const templateInvestmentsAtom = atom(
+  (get) => get(templateAtom)?.investments ?? {},
+  (get, set, updated: Record<string, AssetRecord[]>) => {
+    const prev = get(templateAtom);
+    if (prev) {
+      set(templateAtom, {
+        ...prev,
+        investments: updated,
+      });
+    }
+  },
+);
 export const templateAtom = atom<TemplateMeta | null>(null);

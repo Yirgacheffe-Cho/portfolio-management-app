@@ -29,19 +29,19 @@ export const CurrencyType = {
   KRW: 'KRW',
   USD: 'USD',
   BTC: 'BTC',
+  ETH: 'ETH',
 } as const;
 
 export type CurrencyType = (typeof CurrencyType)[keyof typeof CurrencyType];
 
-// ✅ 개별 투자 항목 구조
-export type InvestmentItem = {
+// ✅ 자산 위치별 매핑
+export type InvestmentMap = Record<string, AssetRecord[]>;
+
+export type AssetRecord = {
   type: InvestmentType;
   currency: CurrencyType;
+  amount?: number; // ✅ 템플릿에선 undefined, 월간에선 사용됨
 };
-
-// ✅ 자산 위치별 매핑
-export type InvestmentMap = Record<string, InvestmentItem[]>;
-
 // ✅ Select 등에 쓰일 리스트 형태
 export const ASSET_TYPE_LIST = Object.values(AssetType);
 export const INVESTMENT_TYPE_LIST = Object.values(InvestmentType);

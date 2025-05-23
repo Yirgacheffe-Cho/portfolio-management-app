@@ -7,11 +7,14 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useAtom } from 'jotai';
 import { Plus, Save, Landmark } from 'lucide-react';
 
-import { templateAtom } from '@/store/template/templateAtom';
-import { useSaveTemplateInvestments } from '@/hooks/template/useSaveTemplateInvestments';
+import {
+  templateAtom,
+  templateInvestmentsAtom,
+} from '@/store/template/templateAtom';
+import { useSaveTemplate } from '@/hooks/template/useSaveTemplate';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -22,19 +25,17 @@ import type { InvestmentMap } from '@/types/asset';
 
 const TemplateInvestmentEditor = () => {
   const template = useAtomValue(templateAtom);
-  const [investments, setInvestments] = useState<InvestmentMap>({});
-  const [newLocation, setNewLocation] = useState('');
-  const { mutate: saveInvestments, isPending } = useSaveTemplateInvestments();
-
   useEffect(() => {
-    if (template?.investments) {
-      setInvestments(template.investments);
-    }
+    console.log('🧪 templateAtom changed:', template);
   }, [template]);
+  const [investments, setInvestments] = useAtom(templateInvestmentsAtom);
+  const [newLocation, setNewLocation] = useState('');
+  const { mutate: saveTemplate, isPending } = useSaveTemplate();
 
   const handleAddLocation = () => {
-    if (!newLocation.trim() || investments[newLocation]) return;
-    setInvestments({ ...investments, [newLocation]: [] });
+    const name = newLocation.trim();
+    if (!name || investments[name]) return;
+    setInvestments({ ...investments, [name]: [] });
     setNewLocation('');
   };
 
@@ -52,7 +53,14 @@ const TemplateInvestmentEditor = () => {
   const handleDeleteItem = (loc: string, idx: number) => {
     const updated = [...investments[loc]];
     updated.splice(idx, 1);
-    setInvestments({ ...investments, [loc]: updated });
+
+    if (updated.length === 0) {
+      const next = { ...investments };
+      delete next[loc];
+      setInvestments(next);
+    } else {
+      setInvestments({ ...investments, [loc]: updated });
+    }
   };
 
   const handleAddItem = (loc: string) => {
@@ -73,7 +81,8 @@ const TemplateInvestmentEditor = () => {
   };
 
   const handleSave = () => {
-    saveInvestments(investments);
+    if (!template) return;
+    saveTemplate(template); // 전체 저장
   };
 
   return (

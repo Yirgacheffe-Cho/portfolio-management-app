@@ -1,4 +1,4 @@
-// src/hooks/template/useSaveTemplateGoal.ts
+// src/hooks/template/useSaveTemplateMeta.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/services/firebase';
@@ -8,7 +8,7 @@ import type { TemplateMeta } from '@/store/template/templateAtom';
  * 💾 템플릿의 목표 금액, 저축률, 자산 분배를 Firestore에 저장하는 훅
  * - merge: true 옵션으로 다른 필드는 유지
  */
-export const useSaveTemplateGoal = () => {
+export const useSaveTemplateMeta = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
