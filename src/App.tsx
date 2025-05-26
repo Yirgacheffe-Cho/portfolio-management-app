@@ -1,9 +1,8 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MainLayout from '@layouts/MainLayout';
+import MainLayout from '@/layouts/MainLayout';
 import Dashboard from '@/pages/Dashboard/Dashboard';
 import Templates from '@/pages/Templates/Templates';
-import MonthlyList from '@/pages/MonthlyList/MonthlyList';
+import RecordsPage from '@/pages/records/RecordsPage';
 import Login from '@/pages/Login/Login';
 
 const App: React.FC = () => {
@@ -11,10 +10,11 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/app" element={<MainLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="templates" element={<Templates />} />
-          <Route path="monthly-list" element={<MonthlyList />} />
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/templates" element={<Templates />} />
+          <Route path="/records/" element={<RecordsPage />} />
+          <Route path="/records/:date" element={<RecordsPage />} />
         </Route>
       </Routes>
     </Router>

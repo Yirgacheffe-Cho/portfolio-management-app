@@ -26,7 +26,7 @@ const Login: React.FC = () => {
         console.log('Firestore에 사용자 정보가 저장되었습니다.');
 
         // 👉 로그인 성공 시 메인 페이지로 이동
-        navigate('/app/dashboard');
+        navigate('/dashboard');
       }
     } catch (error) {
       console.error('로그인 에러:', error);
