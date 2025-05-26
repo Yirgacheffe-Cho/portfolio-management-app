@@ -11,13 +11,27 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CalendarIcon, PlusIcon, SaveIcon, PencilIcon } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createRecordFromTemplate } from '@/services/recordService';
 
 export function RecordPageHeader() {
   const selectedDate = useAtomValue(selectedDateAtom);
   const { data: recordDates = [] } = useRecordDates();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+  // ✅ 자산 입력 생성 → Firestore 문서 생성 + navigate + 캐시 무효화
+  const createMutation = useMutation({
+    mutationFn: () => createRecordFromTemplate(today),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['record-dates'],
+      });
+      navigate(`/records/${today}`);
+    },
+  });
 
   return (
     <div className="flex flex-wrap gap-2 items-center justify-between">
@@ -46,21 +60,11 @@ export function RecordPageHeader() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate(`/records/${today}`)}
+          onClick={() => createMutation.mutate()}
+          disabled={createMutation.status === 'pending'} // ✅ 이렇게 변경
         >
           <PlusIcon className="w-4 h-4 mr-1" />
           자산 입력 생성
-        </Button>
-
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => {
-            // TODO: 저장 mutation 연결
-          }}
-        >
-          <SaveIcon className="w-4 h-4 mr-1" />
-          저장하기
         </Button>
 
         <Button variant="secondary" size="sm" disabled>
