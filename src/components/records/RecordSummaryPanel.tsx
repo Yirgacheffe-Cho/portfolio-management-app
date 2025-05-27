@@ -11,7 +11,10 @@ import {
   InvestmentToSnapMap,
 } from '@/types/asset';
 import { cn } from '@/lib/utils';
-import { getSnapPieData } from '@/utils/getSnapPieData';
+import {
+  getSnapPieDataFromMeta,
+  getKrwValueFromMeta,
+} from '@/utils/getSnapPieData';
 import { PieChartCard } from '@/components/common/PieChartCard';
 import { BarChartCard } from '@/components/common/BarChartCard';
 
@@ -28,12 +31,7 @@ export function RecordSummaryPanel() {
     );
   }
 
-  const getKrwValue = (r: AssetRecord) => {
-    if (r.currency === 'USD') return (r.amount ?? 0) * exchangeRate.USD;
-    if (r.currency === 'BTC') return (r.amount ?? 0) * exchangeRate.BTC;
-    if (r.currency === 'ETH') return (r.amount ?? 0) * exchangeRate.ETH;
-    return r.amount ?? 0;
-  };
+  const getKrwValue = getKrwValueFromMeta(meta);
 
   const allRecords = Object.entries(investments).flatMap(([_, list]) => list);
   const total = allRecords.reduce((acc, r) => acc + getKrwValue(r), 0);
@@ -85,7 +83,7 @@ export function RecordSummaryPanel() {
     },
   );
 
-  const pieData = getSnapPieData(investments, getKrwValue);
+  const pieData = getSnapPieDataFromMeta(investments, meta);
   const barData = Object.entries(locationTotals).map(([location, amount]) => ({
     name: location,
     value: amount,
