@@ -3,9 +3,15 @@ import {
   recordMetaAtom,
   recordInvestmentsAtom,
 } from '@/store/records/recordAtoms';
-import type { AssetRecord, AssetType } from '@/types/asset';
-import { InvestmentToAssetMap } from '@/types/asset';
+import type { AssetRecord, AssetSnapCategory } from '@/types/asset';
+import {
+  InvestmentToAssetMap,
+  AssetType,
+  InvestmentType,
+  InvestmentToSnapMap,
+} from '@/types/asset';
 import { cn } from '@/lib/utils';
+import { getSnapPieData } from '@/utils/getSnapPieData';
 import { PieChartCard } from '@/components/common/PieChartCard';
 import { BarChartCard } from '@/components/common/BarChartCard';
 
@@ -79,18 +85,7 @@ export function RecordSummaryPanel() {
     },
   );
 
-  const rebalanceSuggestions = deltaTable
-    .filter((d) => d.diff !== 0)
-    .map((d) => {
-      const action = d.diff > 0 ? '감소' : '추가';
-      return `${d.type}을(를) ${action} ₩${Math.abs(d.diff).toLocaleString()}`;
-    });
-
-  const pieData = Object.entries(typeTotals).map(([type, value]) => ({
-    name: type,
-    value,
-  }));
-
+  const pieData = getSnapPieData(investments, getKrwValue);
   const barData = Object.entries(locationTotals).map(([location, amount]) => ({
     name: location,
     value: amount,

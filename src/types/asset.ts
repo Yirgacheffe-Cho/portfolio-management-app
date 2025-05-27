@@ -38,7 +38,6 @@ export const CurrencyType = {
 
 export type CurrencyType = (typeof CurrencyType)[keyof typeof CurrencyType];
 
-// ✅ 자산 위치별 매핑
 export type InvestmentMap = Record<string, AssetRecord[]>;
 
 export const InvestmentToAssetMap: Record<InvestmentType, AssetType> = {
@@ -56,6 +55,22 @@ export const InvestmentToAssetMap: Record<InvestmentType, AssetType> = {
   // 코인
   비트코인: AssetType.COIN,
   이더리움: AssetType.COIN,
+};
+export type AssetSnapCategory =
+  | '현금'
+  | '국내주식'
+  | '해외주식'
+  | '코인'
+  | '금';
+
+export const InvestmentToSnapMap: Record<InvestmentType, AssetSnapCategory> = {
+  현금: '현금',
+  달러: '현금',
+  국내주식: '국내주식',
+  해외주식: '해외주식',
+  금: '금',
+  비트코인: '코인',
+  이더리움: '코인',
 };
 export type AssetRecord = {
   type: InvestmentType;
