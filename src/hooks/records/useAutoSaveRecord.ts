@@ -5,14 +5,14 @@ import {
   recordMetaAtom,
   recordInvestmentsAtom,
 } from '@/store/records/recordAtoms';
+import type { Snapshot } from '@/types/report';
+
 import { useDebounce } from '@/hooks/common/useDebounce';
 import { useMutation } from '@tanstack/react-query';
 import { saveRecordToFirestore } from '@/services/recordService';
+import { getSnapPieDataFromMeta } from '@/utils/getSnapPieData';
+import { saveSnapshotToFirestore } from '@/services/reportSerivce';
 
-/**
- * 💾 useAutoSaveRecord
- * - 자산 기록 상태가 변경되면 debounce 후 자동 저장
- */
 export function useAutoSaveRecord() {
   const date = useAtomValue(selectedDateAtom);
   const meta = useAtomValue(recordMetaAtom);
@@ -21,14 +21,29 @@ export function useAutoSaveRecord() {
   const debouncedInvestments = useDebounce(investments, 2000);
 
   const mutation = useMutation({
-    mutationFn: () =>
-      saveRecordToFirestore(date, {
+    mutationFn: async () => {
+      // 🔹 1. 기록 저장
+      await saveRecordToFirestore(date, {
         ...meta,
         investments: debouncedInvestments,
-      }),
+      });
+
+      // 🔹 2. 스냅샷 저장 (환율이 있어야만)
+      if (meta.exchangeRate && Object.keys(meta.exchangeRate).length > 0) {
+        const data = getSnapPieDataFromMeta(debouncedInvestments, meta);
+        const total = data.reduce((sum, d) => sum + d.value, 0);
+        const snapshot: Snapshot = {
+          date,
+          total,
+          data: getSnapPieDataFromMeta(debouncedInvestments, meta),
+          createdAt: Date.now(),
+        };
+
+        await saveSnapshotToFirestore(snapshot);
+      }
+    },
   });
 
-  // ✅ 최초 마운트 이후부터만 저장 작동
   const mounted = useRef(false);
 
   useEffect(() => {
