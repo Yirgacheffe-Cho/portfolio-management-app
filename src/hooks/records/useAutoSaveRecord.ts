@@ -18,13 +18,12 @@ export function useAutoSaveRecord() {
   const meta = useAtomValue(recordMetaAtom);
   const investments = useAtomValue(recordInvestmentsAtom);
 
-  const debouncedMeta = useDebounce(meta, 2000);
   const debouncedInvestments = useDebounce(investments, 2000);
 
   const mutation = useMutation({
     mutationFn: () =>
       saveRecordToFirestore(date, {
-        ...debouncedMeta,
+        ...meta,
         investments: debouncedInvestments,
       }),
   });
@@ -39,7 +38,7 @@ export function useAutoSaveRecord() {
       return;
     }
     mutation.mutate();
-  }, [debouncedMeta, debouncedInvestments, date]);
+  }, [debouncedInvestments, date]);
 
   return {
     isSaving: mutation.status === 'pending',

@@ -66,7 +66,7 @@ const TemplateInvestmentEditor = () => {
   const handleAddItem = (loc: string) => {
     const updated = [
       ...investments[loc],
-      { type: InvestmentType.CASH, currency: CurrencyType.KRW },
+      { type: InvestmentType.KRW, currency: CurrencyType.KRW },
     ];
     setInvestments({ ...investments, [loc]: updated });
   };

@@ -48,6 +48,7 @@ export function useInitRecord() {
         savingsGoal: data.savingsGoal,
         savingRate: data.savingRate,
         targetAllocation: data.targetAllocation,
+        exchangeRate: data.exchangeRate,
       });
       setInvestments(data.investments);
     } else if (template) {
@@ -56,6 +57,7 @@ export function useInitRecord() {
         savingsGoal: template.savingsGoal,
         savingRate: template.savingRate,
         targetAllocation: template.targetAllocation,
+        exchangeRate: {},
       });
       setInvestments(template.investments ?? {});
     }

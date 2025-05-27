@@ -18,4 +18,6 @@ export interface RecordMeta {
    * - string key로 하는 이유는 유연성을 위해 AssetType 직접 참조하지 않음
    */
   targetAllocation: Record<string, number>;
+
+  exchangeRate: Record<string, number>;
 }

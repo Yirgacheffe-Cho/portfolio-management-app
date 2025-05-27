@@ -1,8 +1,7 @@
 // services/exchangeService.ts
 export async function fetchExchangeRates() {
-  const res = await fetch(
-    'https://api.exchangerate.host/latest?base=USD&symbols=KRW',
-  );
+  const res = await fetch('https://api.frankfurter.app/latest?from=USD&to=KRW');
+
   const data = await res.json();
   return data.rates.KRW;
 }

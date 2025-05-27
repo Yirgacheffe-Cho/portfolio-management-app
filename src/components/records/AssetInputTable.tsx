@@ -6,13 +6,14 @@ import {
 } from '@/store/records/recordAtoms';
 import { useAutoSaveRecord } from '@/hooks/records/useAutoSaveRecord';
 import { Input } from '@/components/ui/input';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 /**
  * 📥 AssetInputTable
  * - 상태: recordInvestmentsAtom
  * - 자동 저장: useAutoSaveRecord 내부에서 감지
  * - 해당 location에 없는 자산은 입력 불가로 "-" 표시
+ * - 소수점 입력을 위해 string 상태값 별도 관리
  */
 export function AssetInputTable() {
   const [investments, setInvestments] = useAtom(recordInvestmentsAtom);
@@ -42,20 +43,46 @@ export function AssetInputTable() {
     return `${type} (${currency})`;
   });
 
-  const handleChange = (location: string, assetKey: string, value: string) => {
+  // ✅ 입력 문자열 상태를 따로 관리하여 소수점 중간 입력 지원
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
+
+  const handleInput = (location: string, assetKey: string, value: string) => {
+    const inputKey = `${location}_${assetKey}`;
+    setInputValues((prev) => ({ ...prev, [inputKey]: value }));
+  };
+  const handleBlur = (location: string, assetKey: string) => {
+    const inputKey = `${location}_${assetKey}`;
+    const value = inputValues[inputKey];
     const [type, currency] = assetKey.split('_');
-    const next = investments[location].map((r) => {
+
+    const parsed = Number(value);
+
+    const originalAsset = investments[location].find(
+      (r) => r.type === type && r.currency === currency,
+    );
+
+    // ✅ 유효성 검사 실패 → 입력 복원
+    if (!value || isNaN(parsed) || parsed <= 0) {
+      setInputValues((prev) => ({
+        ...prev,
+        [inputKey]: originalAsset?.amount?.toString() ?? '',
+      }));
+      return;
+    }
+
+    // ✅ 유효 → 실제 상태 반영
+    const updated = investments[location].map((r) => {
       if (r.type === type && r.currency === currency) {
-        return { ...r, amount: value === '' ? undefined : Number(value) };
+        return { ...r, amount: parsed };
       }
       return r;
     });
+
     setInvestments({
       ...investments,
-      [location]: next,
+      [location]: updated,
     });
   };
-
   return (
     <div className="space-y-2">
       {/* 저장 상태 표시 */}
@@ -85,19 +112,23 @@ export function AssetInputTable() {
                     (r) => `${r.type}_${r.currency}` === assetKey,
                   );
                   const isEditable = !!asset;
-
                   return (
                     <td key={assetKey} className="px-1 py-1">
                       {isEditable ? (
                         <Input
                           type="text"
-                          inputMode="numeric"
+                          inputMode="decimal" // 모바일에서도 숫자 키패드 유도
                           className="w-24 text-right"
-                          value={asset?.amount ?? ''}
+                          value={
+                            inputValues[`${location}_${assetKey}`] ??
+                            asset?.amount?.toString() ??
+                            ''
+                          }
                           onChange={(e) => {
-                            const val = e.target.value;
-                            if (!/^\d*$/.test(val)) return;
-                            handleChange(location, assetKey, e.target.value);
+                            handleInput(location, assetKey, e.target.value);
+                          }}
+                          onBlur={() => {
+                            handleBlur(location, assetKey);
                           }}
                         />
                       ) : (

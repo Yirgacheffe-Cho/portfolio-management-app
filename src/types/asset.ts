@@ -12,13 +12,17 @@ export type AssetType = (typeof AssetType)[keyof typeof AssetType];
 
 // ✅ 실제 투자 항목용 객체 + 타입
 export const InvestmentType = {
-  CASH: '현금',
+  //현금
+  KRW: '현금',
+  USD: '달러',
+  //주식
   KOREAN_STOCK: '국내주식',
   FOREIGN_STOCK: '해외주식',
+  //금
   GOLD: '금',
+  //코인
   BITCOIN: '비트코인',
   ETHEREUM: '이더리움',
-  USD: '달러',
 } as const;
 
 export type InvestmentType =
@@ -37,6 +41,22 @@ export type CurrencyType = (typeof CurrencyType)[keyof typeof CurrencyType];
 // ✅ 자산 위치별 매핑
 export type InvestmentMap = Record<string, AssetRecord[]>;
 
+export const InvestmentToAssetMap: Record<InvestmentType, AssetType> = {
+  // 현금 계열
+  현금: AssetType.CASH,
+  달러: AssetType.CASH,
+
+  // 주식
+  국내주식: AssetType.STOCK,
+  해외주식: AssetType.STOCK,
+
+  // 금
+  금: AssetType.GOLD,
+
+  // 코인
+  비트코인: AssetType.COIN,
+  이더리움: AssetType.COIN,
+};
 export type AssetRecord = {
   type: InvestmentType;
   currency: CurrencyType;

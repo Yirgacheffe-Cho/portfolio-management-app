@@ -3,6 +3,7 @@ import { auth, db } from './firebase';
 import type { AssetRecord, InvestmentMap } from '@/types/asset';
 import type { RecordMeta } from '@/types/record';
 import { getUserTemplate } from './templateService';
+import { fetchExchangeRates, fetchCryptoPrices } from './exchangeService';
 
 /**
  * 📘 특정 일자 기록 조회
@@ -13,6 +14,7 @@ export async function getRecordFromFirestore(date: string): Promise<{
   savingRate: number;
   targetAllocation: Record<string, number>;
   investments: Record<string, AssetRecord[]>;
+  exchangeRate: Record<string, number>;
 } | null> {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error('로그인이 필요합니다.');
@@ -41,12 +43,25 @@ export async function getAllRecordDates(): Promise<string[]> {
  * ➕ 템플릿 기반 자산 기록 생성
  * - 경로: /users/{uid}/records/{yyyymmdd}
  */
+
 export async function createRecordFromTemplate(date: string) {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error('로그인이 필요합니다.');
 
   const template = await getUserTemplate();
   if (!template) throw new Error('템플릿 없음');
+
+  // ✅ 환율 정보 가져오기
+  const [usdToKrw, crypto] = await Promise.all([
+    fetchExchangeRates(),
+    fetchCryptoPrices(),
+  ]);
+
+  const exchangeRate: Record<string, number> = {
+    USD: usdToKrw,
+    BTC: crypto.BTC,
+    ETH: crypto.ETH,
+  };
 
   const { savingsGoal, savingRate, targetAllocation, investments } = template;
 
@@ -55,6 +70,7 @@ export async function createRecordFromTemplate(date: string) {
     savingRate,
     targetAllocation,
     investments,
+    exchangeRate, // ✅ 함께 저장
   });
 }
 

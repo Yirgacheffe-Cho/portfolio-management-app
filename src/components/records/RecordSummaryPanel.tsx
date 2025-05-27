@@ -3,84 +3,178 @@ import {
   recordMetaAtom,
   recordInvestmentsAtom,
 } from '@/store/records/recordAtoms';
-import { CURRENCY_TYPE_LIST } from '@/types/asset';
+import type { AssetRecord, AssetType } from '@/types/asset';
+import { InvestmentToAssetMap } from '@/types/asset';
+import { cn } from '@/lib/utils';
+import { PieChartCard } from '@/components/common/PieChartCard';
+import { BarChartCard } from '@/components/common/BarChartCard';
 
-/**
- * 📊 RecordSummaryPanel
- * - 자산 총합, 외화 비중, 목표 대비 분석, 누락 경고 등
- */
 export function RecordSummaryPanel() {
   const meta = useAtomValue(recordMetaAtom);
   const investments = useAtomValue(recordInvestmentsAtom);
+  const exchangeRate = meta.exchangeRate;
 
-  // 1. 평탄화
-  const allRecords = Object.values(investments).flat();
+  if (!exchangeRate) {
+    return (
+      <div className="text-sm text-red-600">
+        ⚠ 환율 정보가 없습니다. 저장 당시 시세가 포함되지 않았습니다.
+      </div>
+    );
+  }
 
-  // 2. 총합
-  const total = allRecords.reduce((acc, cur) => acc + (cur.amount ?? 0), 0);
+  const getKrwValue = (r: AssetRecord) => {
+    if (r.currency === 'USD') return (r.amount ?? 0) * exchangeRate.USD;
+    if (r.currency === 'BTC') return (r.amount ?? 0) * exchangeRate.BTC;
+    if (r.currency === 'ETH') return (r.amount ?? 0) * exchangeRate.ETH;
+    return r.amount ?? 0;
+  };
 
-  // 3. 외화 비중 (USD, BTC, ETH)
-  const foreignCurrencies = ['USD', 'BTC', 'ETH'];
-  const foreign = foreignCurrencies.map((cur) => {
-    const sum = allRecords
-      .filter((r) => r.currency === cur)
-      .reduce((acc, cur) => acc + (cur.amount ?? 0), 0);
-    return {
-      currency: cur,
-      percent: total ? ((sum / total) * 100).toFixed(1) : '0.0',
-    };
+  const allRecords = Object.entries(investments).flatMap(([_, list]) => list);
+  const total = allRecords.reduce((acc, r) => acc + getKrwValue(r), 0);
+
+  const typeTotals: Record<AssetType, number> = {
+    현금: 0,
+    주식: 0,
+    금: 0,
+    코인: 0,
+  };
+
+  const locationTotals: Record<string, number> = {};
+  const currencyTotals: Record<string, number> = {};
+
+  Object.entries(investments).forEach(([location, records]) => {
+    let sum = 0;
+    records.forEach((r) => {
+      const krw = getKrwValue(r);
+      sum += krw;
+
+      currencyTotals[r.currency] = (currencyTotals[r.currency] ?? 0) + krw;
+
+      const assetType = InvestmentToAssetMap[r.type];
+      if (assetType) {
+        typeTotals[assetType] += krw;
+      }
+    });
+    locationTotals[location] = sum;
   });
 
-  // 4. 목표 대비 분석
-  const typeTotals: Record<string, number> = {};
-  allRecords.forEach((r) => {
-    if (!r.type) return;
-    typeTotals[r.type] = (typeTotals[r.type] ?? 0) + (r.amount ?? 0);
-  });
+  const deltaTable = Object.entries(meta.targetAllocation).map(
+    ([type, ratio]) => {
+      const actualAmount = typeTotals[type as AssetType] ?? 0;
+      const targetAmount = total * ratio;
+      const diff = actualAmount - targetAmount;
+      const percent = (actualAmount / targetAmount) * 100;
+      const status =
+        percent >= 110 ? '🟢 초과' : percent <= 80 ? '🔴 부족' : '⚪ 근접';
 
-  const target = meta.targetAllocation;
-  const delta: { type: string; diff: number }[] = Object.entries(target).map(
-    ([type, goal]) => {
-      const actualRatio = total ? (typeTotals[type] ?? 0) / total : 0;
-      const diff = ((actualRatio - goal) * 100).toFixed(1);
-      return { type, diff: parseFloat(diff) };
+      return {
+        type,
+        ratio,
+        targetAmount,
+        actualAmount,
+        percent,
+        diff,
+        status,
+      };
     },
   );
 
-  // 5. 누락 자산 경고
-  const missing = Object.keys(target).filter((type) => {
-    const record = allRecords.find((r) => r.type === type);
-    return record?.amount === undefined;
+  const rebalanceSuggestions = deltaTable
+    .filter((d) => d.diff !== 0)
+    .map((d) => {
+      const action = d.diff > 0 ? '감소' : '추가';
+      return `${d.type}을(를) ${action} ₩${Math.abs(d.diff).toLocaleString()}`;
+    });
+
+  const pieData = Object.entries(typeTotals).map(([type, value]) => ({
+    name: type,
+    value,
+  }));
+
+  const barData = Object.entries(locationTotals).map(([location, amount]) => ({
+    name: location,
+    value: amount,
+  }));
+
+  const currencyData = Object.entries(currencyTotals).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
+  const missing = Object.keys(meta.targetAllocation).filter((type) => {
+    const asset = type as AssetType;
+    return !allRecords.find(
+      (r) => InvestmentToAssetMap[r.type] === asset && r.amount !== undefined,
+    );
   });
 
   return (
-    <div className="space-y-4 text-sm">
-      <div>💰 총 자산 합계: ₩{total.toLocaleString()}</div>
+    <div className="space-y-6 text-sm">
+      <div>💰 총 자산 합계 (환산 기준): ₩{total.toLocaleString()}</div>
 
       <div>
-        💱 외화 비중:{' '}
-        {foreign.map((f) => (
-          <span key={f.currency} className="mr-2">
-            {f.currency} {f.percent}%
+        📉 저장된 환율 기준:{' '}
+        {Object.entries(exchangeRate).map(([cur, rate]) => (
+          <span key={cur} className="inline-block mr-3">
+            {cur} = ₩{rate.toLocaleString()}
           </span>
         ))}
       </div>
 
-      <div>
-        🎯 목표 대비:
-        <ul className="list-disc list-inside">
-          {delta.map((d) => (
-            <li key={d.type}>
-              {d.type}: {d.diff > 0 ? '+' : ''}
-              {d.diff}%
-            </li>
-          ))}
-        </ul>
+      <PieChartCard title="📊 자산 구성 (자산 유형 기준)" data={pieData} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <BarChartCard title="🏦 보관처별 총 보유액" data={barData} />
+        <PieChartCard
+          title="💱 통화 기준 비중"
+          data={currencyData}
+          outerRadius={80}
+        />
       </div>
+
+      <table className="w-full text-sm border mt-4">
+        <thead className="bg-muted text-left">
+          <tr>
+            <th className="p-2">자산 유형</th>
+            <th className="p-2">목표 비중</th>
+            <th className="p-2">목표 금액</th>
+            <th className="p-2">실제 금액</th>
+            <th className="p-2">달성률 📈</th>
+            <th className="p-2">차이</th>
+            <th className="p-2">상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          {deltaTable.map((row) => (
+            <tr key={row.type} className="border-t">
+              <td className="p-2">{row.type}</td>
+              <td className="p-2">{(row.ratio * 100).toFixed(1)}%</td>
+              <td className="p-2">₩{row.targetAmount.toLocaleString()}</td>
+              <td className="p-2">₩{row.actualAmount.toLocaleString()}</td>
+              <td className="p-2">{row.percent.toFixed(1)}%</td>
+              <td
+                className={cn(
+                  'p-2 text-right font-mono',
+                  row.diff > 0 && 'text-blue-600',
+                  row.diff < 0 && 'text-red-600',
+                  row.diff === 0 && 'text-muted-foreground',
+                )}
+              >
+                {row.diff > 0 && '+'}
+                {row.diff < 0 && '-'}₩
+                {Math.abs(row.diff).toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                })}
+              </td>
+              <td className="p-2">{row.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {missing.length > 0 && (
         <div className="text-red-600">
-          ⚠ 다음 자산이 입력되지 않았습니다: {missing.join(', ')}
+          ⚠ 목표 항목 중 입력되지 않은 자산: {missing.join(', ')}
         </div>
       )}
     </div>

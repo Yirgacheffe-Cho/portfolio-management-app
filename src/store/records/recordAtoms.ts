@@ -20,4 +20,5 @@ export const recordMetaAtom = atom<RecordMeta>({
   savingsGoal: 0,
   savingRate: 0,
   targetAllocation: {},
+  exchangeRate: {},
 });
