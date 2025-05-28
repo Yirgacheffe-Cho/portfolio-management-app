@@ -17,3 +17,13 @@ export async function saveSnapshotToFirestore(
   const ref = doc(db, 'users', uid, 'reports', snapshot.date);
   await setDoc(ref, snapshot, { merge: false }); // merge: true로 변경 보존 가능
 }
+export async function getSnapshotsFromFirestore(
+  uid: string,
+): Promise<Snapshot[]> {
+  const colRef = collection(db, 'users', uid, 'reports');
+  const snap = await getDocs(colRef);
+  return snap.docs
+    .map((doc) => doc.data())
+    .filter((d): d is Snapshot => !!d.date && !!d.total && !!d.data) // 타입 가드
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
+}

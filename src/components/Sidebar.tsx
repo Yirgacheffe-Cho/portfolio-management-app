@@ -10,8 +10,8 @@ import { LayoutDashboard, ListChecks, FileBox } from 'lucide-react';
 export function Sidebar() {
   const menuItems = [
     {
-      name: '대시보드',
-      path: '/dashboard',
+      name: '리포트',
+      path: '/report',
       icon: <LayoutDashboard className="w-4 h-4 mr-2" />,
     },
     {
