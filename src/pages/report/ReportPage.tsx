@@ -3,10 +3,12 @@
 import { useSnapshots } from '@/hooks/report/useSnapshots';
 import { SnapshotKPI } from '@/components/report/SnapshotKPI';
 import { SnapshotTableCard } from '@/components/report/SnapshotTableCard';
-// import { SnapshotGrowthTable } from './SnapshotGrowthTable';
-// import { AIInsightCard } from './AIInsightCard';
+import { AssetGrowthChartCard } from '@/components/report/AssetGrowthChartCard';
+import { useTemplateInitializer } from '@/hooks/template/useTemplateInitializer';
+import { AIInsightCard } from '@/components/report/AIInsightCard';
 
 export function ReportPage() {
+  useTemplateInitializer();
   const { data: snapshots, isLoading } = useSnapshots();
 
   if (isLoading) return <div className="p-4">📊 리포트 불러오는 중...</div>;
@@ -31,8 +33,8 @@ export function ReportPage() {
         oneYearAgo={oneYearAgo}
       />
       <SnapshotTableCard snapshots={snapshots} />
-      {/* <SnapshotGrowthTable snapshots={snapshots} />
-      <AIInsightCard snapshot={current} /> */}
+      <AssetGrowthChartCard snapshots={snapshots} />
+      <AIInsightCard snapshots={snapshots} />
     </section>
   );
 }
