@@ -56,13 +56,15 @@ export const InvestmentToAssetMap: Record<InvestmentType, AssetType> = {
   비트코인: AssetType.COIN,
   이더리움: AssetType.COIN,
 };
-export type AssetSnapCategory =
-  | '현금'
-  | '국내주식'
-  | '해외주식'
-  | '코인'
-  | '금';
+export const ASSET_SNAP_CATEGORIES = [
+  '현금',
+  '국내주식',
+  '해외주식',
+  '코인',
+  '금',
+] as const;
 
+export type AssetSnapCategory = (typeof ASSET_SNAP_CATEGORIES)[number];
 export const InvestmentToSnapMap: Record<InvestmentType, AssetSnapCategory> = {
   현금: '현금',
   달러: '현금',

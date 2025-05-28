@@ -2,7 +2,7 @@
 
 import { useSnapshots } from '@/hooks/report/useSnapshots';
 import { SnapshotKPI } from '@/components/report/SnapshotKPI';
-// import { AssetGrowthChart } from './AssetGrowthChart';
+import { SnapshotTableCard } from '@/components/report/SnapshotTableCard';
 // import { SnapshotGrowthTable } from './SnapshotGrowthTable';
 // import { AIInsightCard } from './AIInsightCard';
 
@@ -30,8 +30,8 @@ export function ReportPage() {
         previous={previous}
         oneYearAgo={oneYearAgo}
       />
-      {/* <AssetGrowthChart snapshots={snapshots} />
-      <SnapshotGrowthTable snapshots={snapshots} />
+      <SnapshotTableCard snapshots={snapshots} />
+      {/* <SnapshotGrowthTable snapshots={snapshots} />
       <AIInsightCard snapshot={current} /> */}
     </section>
   );
