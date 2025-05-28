@@ -19,7 +19,6 @@ export function getSnapPieDataFromMeta(
   const { exchangeRate } = meta;
   if (!exchangeRate) return [];
 
-  // ✅ 환산 함수 받아두기 (1번만 실행)
   const getKrwValue = getKrwValueFromMeta(meta);
 
   const totals: Record<AssetSnapCategory, number> = {
@@ -33,7 +32,7 @@ export function getSnapPieDataFromMeta(
   Object.values(investments).forEach((records) => {
     records.forEach((r) => {
       const category = InvestmentToSnapMap[r.type];
-      const krw = getKrwValue(r); // ✅ 여기서 사용
+      const krw = getKrwValue(r);
       totals[category] += krw;
     });
   });
@@ -42,7 +41,7 @@ export function getSnapPieDataFromMeta(
     .filter(([, value]) => value > 0)
     .map(([name, value]) => ({
       name: name as AssetSnapCategory,
-      value,
+      value: Math.floor(value), // ✅ 소수점 버림
     }));
 }
 /**

@@ -5,7 +5,7 @@ import { SnapshotKPI } from '@/components/report/SnapshotKPI';
 import { SnapshotTableCard } from '@/components/report/SnapshotTableCard';
 import { AssetGrowthChartCard } from '@/components/report/AssetGrowthChartCard';
 import { useTemplateInitializer } from '@/hooks/template/useTemplateInitializer';
-import { AIInsightCard } from '@/components/report/AIInsightCard';
+import { AIInsightContainer } from '@components/report/AIInsightContainer';
 
 export function ReportPage() {
   useTemplateInitializer();
@@ -34,7 +34,7 @@ export function ReportPage() {
       />
       <SnapshotTableCard snapshots={snapshots} />
       <AssetGrowthChartCard snapshots={snapshots} />
-      <AIInsightCard snapshots={snapshots} />
+      <AIInsightContainer snapshots={snapshots} />
     </section>
   );
 }
