@@ -1,16 +1,34 @@
-import React from 'react';
+'use client';
 
-const Topbar: React.FC = () => {
+import { useAuth } from '@/hooks/auth/useAuth';
+import { useLogout } from '@/hooks/auth/useLogout';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+
+export default function Topbar() {
+  const { user } = useAuth();
+  const { logout } = useLogout();
+
   return (
-    <div className="w-full h-16 bg-gray-100 border-b flex items-center justify-between px-6">
-      <div className="text-xl font-semibold">Dashboard</div>
-      <div className="flex items-center gap-4">
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-md">
-          Logout
-        </button>
-      </div>
+    <div className="w-full h-16 border-b bg-background px-6 flex items-center justify-between">
+      <div className="text-lg font-semibold text-foreground">자산관리 앱</div>
+
+      {user && (
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={user.photoURL ?? ''} alt="user" />
+              <AvatarFallback>
+                {user.email?.[0]?.toUpperCase() ?? 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <span>{user.email}</span>
+          </div>
+          <Button size="sm" variant="outline" onClick={logout}>
+            로그아웃
+          </Button>
+        </div>
+      )}
     </div>
   );
-};
-
-export default Topbar;
+}
