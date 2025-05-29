@@ -5,13 +5,15 @@ import { authAtom } from '@/store/auth/authAtom';
 import { templateAtom } from '@/store/template/templateAtom';
 import { defaultTemplate } from '@/store/template/defaultTemplate';
 import type { TemplateMeta } from '@/store/template/templateAtom';
-import { auth, db } from '@/services/firebase';
+import { db } from '@/services/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect } from 'react';
+import { useLogger } from '@/utils/logger';
 
 export const useTemplateInitializer = () => {
   const setTemplate = useSetAtom(templateAtom);
   const user = useAtomValue(authAtom); // ✅ auth.currentUser 대신
+  const log = useLogger(import.meta.url);
   const uid = user?.uid;
 
   const fetchTemplate = async (): Promise<TemplateMeta | null> => {
@@ -30,7 +32,7 @@ export const useTemplateInitializer = () => {
 
   // ✅ 렌더링 타이밍이 아닌, 실제 마운트 이후로 상태 업데이트 defer
   useEffect(() => {
-    console.log(JSON.stringify(data));
+    log.debug(JSON.stringify(data));
     setTemplate(data ?? defaultTemplate);
   }, [data, setTemplate]);
 };

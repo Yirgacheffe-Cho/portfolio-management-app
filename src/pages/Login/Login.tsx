@@ -1,11 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import { useLogin } from '@/hooks/auth/useLogin';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { login } = useLogin({
-    onSuccess: () => navigate('/report'),
-  });
+  const { login } = useLogin();
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-50">
