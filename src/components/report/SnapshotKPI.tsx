@@ -1,31 +1,20 @@
-import type { Snapshot } from '@/types/report';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+'use client';
 
+import type { Snapshot } from '@/types/report';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  PiggyBank,
+  Wallet,
+} from 'lucide-react';
+import { formatFullDate } from '@/utils/dateUtils';
 type SnapshotKPIProps = {
   current: Snapshot;
   previous?: Snapshot;
   oneYearAgo?: Snapshot;
 };
-
-/**
- * 날짜 포맷
- * - '20240527' → '2025년 5월 27일'
- * - '202405' → '2025년 5월'
- */
-function formatFullDate(date: string) {
-  if (date.length === 6) {
-    const year = date.slice(0, 4);
-    const month = parseInt(date.slice(4), 10);
-    return `${year}년 ${month}월`;
-  } else if (date.length === 8) {
-    const year = date.slice(0, 4);
-    const month = parseInt(date.slice(4, 6), 10);
-    const day = parseInt(date.slice(6, 8), 10);
-    return `${year}년 ${month}월 ${day}일`;
-  }
-  return date;
-}
 
 export function SnapshotKPI({
   current,
@@ -66,8 +55,9 @@ export function SnapshotKPI({
   return (
     <Card className="shadow-sm border">
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-foreground">
-          📅 {formatFullDate(current.date)} 기준 자산 요약
+        <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+          <Wallet className="w-4 h-4 text-muted-foreground" />
+          {formatFullDate(current.date)} 기준 자산 요약
         </CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
@@ -142,12 +132,7 @@ function KpiBox({
         : 'text-foreground';
 
   const Icon =
-    variant === 'up'
-      ? ArrowUpRight
-      : variant === 'down'
-        ? ArrowDownRight
-        : null;
-
+    variant === 'up' ? TrendingUp : variant === 'down' ? TrendingDown : null;
   return (
     <div className="flex flex-col gap-1">
       <div className="text-muted-foreground">{label}</div>

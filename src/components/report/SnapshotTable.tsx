@@ -2,6 +2,14 @@ import type { Snapshot } from '@/types/report';
 import { formatFullDate } from '@/utils/dateUtils';
 import { ASSET_SNAP_CATEGORIES } from '@/types/asset';
 import { cn } from '@/lib/utils';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type Props = {
   snapshots: Snapshot[];
@@ -10,6 +18,7 @@ type Props = {
 export function SnapshotTable({ snapshots }: Props) {
   const sorted = [...snapshots].sort((a, b) => Number(a.date) - Number(b.date));
   const categories = ASSET_SNAP_CATEGORIES;
+
   const calcChange = (curr: Snapshot, base?: Snapshot): string | null => {
     if (!base) return null;
     const rate = ((curr.total - base.total) / base.total) * 100;
@@ -20,22 +29,22 @@ export function SnapshotTable({ snapshots }: Props) {
     snap.data.find((d) => d.name === name)?.value ?? 0;
 
   return (
-    <div className="max-h-[420px] overflow-y-auto overflow-x-auto text-sm border rounded-md">
-      <table className="min-w-[900px] text-left border-collapse">
-        <thead className="bg-muted text-muted-foreground font-medium sticky top-0 z-10">
-          <tr>
-            <th className="px-4 py-2 whitespace-nowrap">날짜</th>
+    <div className="overflow-auto rounded-md border">
+      <Table className="text-sm">
+        <TableHeader className="bg-muted sticky top-0 z-10">
+          <TableRow>
+            <TableHead className="whitespace-nowrap px-4 py-2">날짜</TableHead>
             {categories.map((cat) => (
-              <th key={cat} className="px-2 py-2 text-right">
+              <TableHead key={cat} className="text-right px-2 py-2">
                 {cat}
-              </th>
+              </TableHead>
             ))}
-            <th className="px-4 py-2 text-right">합계</th>
-            <th className="px-4 py-2 text-right">전달 증가율</th>
-            <th className="px-4 py-2 text-right">1년 증가율</th>
-          </tr>
-        </thead>
-        <tbody>
+            <TableHead className="text-right px-4 py-2">합계</TableHead>
+            <TableHead className="text-right px-4 py-2">전달 증가율</TableHead>
+            <TableHead className="text-right px-4 py-2">1년 증가율</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {sorted.map((snap, idx) => {
             const prev = idx > 0 ? sorted[idx - 1] : undefined;
             const yearAgo = sorted.find(
@@ -46,44 +55,44 @@ export function SnapshotTable({ snapshots }: Props) {
             const deltaYear = calcChange(snap, yearAgo);
 
             return (
-              <tr key={snap.date} className="border-t">
-                <td className="px-4 py-2 whitespace-nowrap">
+              <TableRow key={snap.date}>
+                <TableCell className="whitespace-nowrap px-4 py-2">
                   {formatFullDate(snap.date)}
-                </td>
+                </TableCell>
                 {categories.map((cat) => {
                   const val = getValue(snap, cat);
                   return (
-                    <td key={cat} className="px-2 py-1 text-right">
+                    <TableCell key={cat} className="text-right px-2 py-1">
                       ₩{val.toLocaleString()}
-                    </td>
+                    </TableCell>
                   );
                 })}
-                <td className="px-4 py-2 text-right font-medium text-foreground">
+                <TableCell className="text-right font-medium text-foreground px-4 py-2">
                   ₩{snap.total.toLocaleString()}
-                </td>
-                <td
+                </TableCell>
+                <TableCell
                   className={cn(
-                    'px-4 py-2 text-right',
+                    'text-right px-4 py-2',
                     deltaPrev?.includes('+') && 'text-green-600',
                     deltaPrev?.includes('-') && 'text-red-600',
                   )}
                 >
                   {deltaPrev ?? '—'}
-                </td>
-                <td
+                </TableCell>
+                <TableCell
                   className={cn(
-                    'px-4 py-2 text-right',
+                    'text-right px-4 py-2',
                     deltaYear?.includes('+') && 'text-green-600',
                     deltaYear?.includes('-') && 'text-red-600',
                   )}
                 >
                   {deltaYear ?? '—'}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

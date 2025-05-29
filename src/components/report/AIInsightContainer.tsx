@@ -6,6 +6,8 @@ import { useAtomValue } from 'jotai';
 import { templateAtom } from '@/store/template/templateAtom';
 import { generatePromptFromSnapshots } from '@/utils/generatePromptFromSnapshot';
 import { AIReportCard } from '@/components/report/AIReportCard';
+import { BrainCircuit } from 'lucide-react';
+
 import type { Snapshot } from '@/types/report';
 import { cn } from '@/lib/utils'; // shadcn 기본 유틸 (clsx 래퍼)
 
@@ -47,8 +49,9 @@ export function AIInsightContainer({ snapshots }: Props) {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row justify-between items-center pb-2">
-        <CardTitle className="text-base font-semibold">
-          🧠 AI 분석 리포트
+        <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+          <BrainCircuit className="w-4 h-4 text-muted-foreground" />
+          AI 분석 리포트
         </CardTitle>
         <Button onClick={handleAnalyze} disabled={showSpinner || analyzed}>
           {showSpinner ? (
