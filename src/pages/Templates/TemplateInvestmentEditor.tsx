@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-import LocationList from './LocationList';
+import LocationList from '@/components/template/LocationList';
 import { InvestmentType, CurrencyType } from '@/types/asset';
 import type { InvestmentMap } from '@/types/asset';
 
