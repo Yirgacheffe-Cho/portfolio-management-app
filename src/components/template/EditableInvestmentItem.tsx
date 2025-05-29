@@ -6,12 +6,12 @@
  * - editMode 여부에 따라 표시 형태 변경
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   InvestmentType,
   CurrencyType,
   INVESTMENT_TYPE_LIST,
-  CURRENCY_TYPE_LIST,
+  InvestmentCurrencyOptionsMap,
 } from '@/types/asset';
 
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,13 @@ const EditableInvestmentItem: React.FC<Props> = ({
   const [editMode, setEditMode] = useState(false);
   const [tempType, setTempType] = useState<InvestmentType>(type);
   const [tempCurrency, setTempCurrency] = useState<CurrencyType>(currency);
-
+  useEffect(() => {
+    const validCurrencies = InvestmentCurrencyOptionsMap[tempType];
+    if (!Array.isArray(validCurrencies)) return;
+    if (!validCurrencies.includes(tempCurrency)) {
+      setTempCurrency(validCurrencies[0]);
+    }
+  }, [tempType, tempCurrency]);
   return (
     <div className="bg-white border rounded-lg px-4 py-3 shadow-sm">
       {editMode ? (
@@ -53,7 +59,7 @@ const EditableInvestmentItem: React.FC<Props> = ({
           <EnumSelect
             className="min-w-[140px]"
             value={tempCurrency}
-            options={CURRENCY_TYPE_LIST}
+            options={InvestmentCurrencyOptionsMap[tempType]} // ✅ 자산 유형에 따른 제한
             onChange={setTempCurrency}
             placeholder="통화 선택"
           />
