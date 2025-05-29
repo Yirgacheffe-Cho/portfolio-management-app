@@ -1,9 +1,9 @@
 // store/template/defaultTemplate.ts
-import { AssetType } from '@/types/asset';
+import { AssetType, InvestmentType } from '@/types/asset';
 import type { TemplateMeta } from './templateAtom';
 
 export const defaultTemplate: TemplateMeta = {
-  savingsGoal: 0,
+  savingsGoal: 1000000,
   savingRate: 0.75,
   targetAllocation: {
     [AssetType.CASH]: 25 / 100,
@@ -11,6 +11,12 @@ export const defaultTemplate: TemplateMeta = {
     [AssetType.GOLD]: 25 / 100,
     [AssetType.COIN]: 25 / 100,
   },
-  //locations: [],
-  investments: {},
+  investments: {
+    우리은행: [
+      {
+        type: InvestmentType.KRW,
+        currency: 'KRW',
+      },
+    ],
+  },
 };
