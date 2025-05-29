@@ -8,7 +8,8 @@
     "build": "tsc -b ./tsconfig.json && vite build --config ./vite.config.ts",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --config config/linter/eslint.config.js",
     "preview": "vite preview --config config/vite/vite.config.ts",
-    "format": "prettier --config config/linter/prettier.config.cjs --write \"src/**/*.{ts,tsx}\""
+    "format": "prettier --config config/linter/prettier.config.cjs --write \"src/**/*.{ts,tsx}\"",
+    "emulator": "firebase emulators:start --import=./data --export-on-exit --config ./config/firebase/firebase.json"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
