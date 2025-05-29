@@ -3,13 +3,7 @@ import {
   recordMetaAtom,
   recordInvestmentsAtom,
 } from '@/store/records/recordAtoms';
-import type { AssetRecord, AssetSnapCategory } from '@/types/asset';
-import {
-  InvestmentToAssetMap,
-  AssetType,
-  InvestmentType,
-  InvestmentToSnapMap,
-} from '@/types/asset';
+import { InvestmentToAssetMap, AssetType } from '@/types/asset';
 import { cn } from '@/lib/utils';
 import {
   getSnapPieDataFromMeta,

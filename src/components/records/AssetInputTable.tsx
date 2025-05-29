@@ -1,9 +1,5 @@
-import { useAtom, useAtomValue } from 'jotai';
-import {
-  recordInvestmentsAtom,
-  recordMetaAtom,
-  selectedDateAtom,
-} from '@/store/records/recordAtoms';
+import { useAtom } from 'jotai';
+import { recordInvestmentsAtom } from '@/store/records/recordAtoms';
 import { useAutoSaveRecord } from '@/hooks/records/useAutoSaveRecord';
 import { Input } from '@/components/ui/input';
 import { useMemo, useState } from 'react';
@@ -17,8 +13,6 @@ import { useMemo, useState } from 'react';
  */
 export function AssetInputTable() {
   const [investments, setInvestments] = useAtom(recordInvestmentsAtom);
-  const meta = useAtomValue(recordMetaAtom);
-  const date = useAtomValue(selectedDateAtom);
 
   // ✅ 자동 저장 훅 (debounce 내부 포함)
   const { isSaving } = useAutoSaveRecord();
@@ -112,6 +106,7 @@ export function AssetInputTable() {
                     (r) => `${r.type}_${r.currency}` === assetKey,
                   );
                   const isEditable = !!asset;
+
                   return (
                     <td key={assetKey} className="px-1 py-1">
                       {isEditable ? (

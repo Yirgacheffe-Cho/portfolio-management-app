@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSetAtom } from 'jotai';
 import { selectedDateAtom } from '@/store/records/recordAtoms';

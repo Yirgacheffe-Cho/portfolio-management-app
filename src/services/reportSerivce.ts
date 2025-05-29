@@ -1,5 +1,5 @@
 // services/snapshotService.ts
-import { collection, doc, getDoc, setDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import type { Snapshot } from '@/types/report';
 

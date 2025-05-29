@@ -2,13 +2,7 @@
 
 import type { Snapshot } from '@/types/report';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  PiggyBank,
-  Wallet,
-} from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import { formatFullDate } from '@/utils/dateUtils';
 type SnapshotKPIProps = {
   current: Snapshot;

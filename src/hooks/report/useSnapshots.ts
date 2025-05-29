@@ -1,6 +1,6 @@
 // hooks/report/useSnapshots.ts
 import { useQuery } from '@tanstack/react-query';
-import { auth, db } from '@/services/firebase';
+import { auth } from '@/services/firebase';
 import { getSnapshotsFromFirestore } from '@/services/reportSerivce';
 
 export function useSnapshots() {

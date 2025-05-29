@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectValue,
 } from '@/components/ui/select';
-import { CalendarIcon, PlusIcon, SaveIcon, PencilIcon } from 'lucide-react';
+import { CalendarIcon, PlusIcon, PencilIcon } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createRecordFromTemplate } from '@/services/recordService';
 

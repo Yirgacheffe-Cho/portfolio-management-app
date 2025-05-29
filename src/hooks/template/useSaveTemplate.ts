@@ -2,11 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/services/firebase';
 import type { TemplateMeta } from '@/store/template/templateAtom';
-import { templateAtom } from '@/store/template/templateAtom';
-import { useSetAtom } from 'jotai';
 export const useSaveTemplate = () => {
   const queryClient = useQueryClient();
-  const setTemplate = useSetAtom(templateAtom); // ✅ jotai setter
 
   return useMutation({
     mutationFn: async (data: TemplateMeta) => {
@@ -17,7 +14,7 @@ export const useSaveTemplate = () => {
       await setDoc(ref, data, { merge: false }); // 🔥 완전 덮어쓰기
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['template'] });
       //setTemplate(data);
     },
