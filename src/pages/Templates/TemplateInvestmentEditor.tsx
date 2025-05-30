@@ -79,7 +79,11 @@ const TemplateInvestmentEditor = () => {
     }
     setInvestments(updatedInvestments);
   };
-
+  const handleRemoveLocation = (loc: string) => {
+    const next = { ...investments };
+    delete next[loc];
+    setInvestments(next);
+  };
   const handleSave = () => {
     if (!template) return;
     saveTemplate(template); // 전체 저장
@@ -113,6 +117,7 @@ const TemplateInvestmentEditor = () => {
           onDeleteItem={handleDeleteItem}
           onAddItem={handleAddItem}
           onRenameLocation={handleRenameLocation}
+          onRemoveLocation={handleRemoveLocation} // ✅ 여기!
         />
 
         {/* 저장 버튼 */}

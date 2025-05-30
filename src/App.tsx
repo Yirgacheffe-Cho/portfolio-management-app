@@ -4,6 +4,8 @@ import MainLayout from '@/layouts/MainLayout';
 import { useAuthListener } from '@/hooks/auth/useAuthListener';
 import { lazy, Suspense } from 'react';
 import { PageSkeleton } from '@/components/common/PageSkeleton';
+import ConfirmDialogRenderer from '@/components/common/ConfirmDialogRenderer';
+
 // ✨ lazy-load pages
 const ReportPage = lazy(() => import('@/pages/report/ReportPage'));
 const RecordsPage = lazy(() => import('@/pages/records/RecordsPage'));
@@ -55,6 +57,7 @@ const App: React.FC = () => {
           </Route>
         </Routes>
       </Suspense>
+      <ConfirmDialogRenderer />
     </Router>
   );
 };

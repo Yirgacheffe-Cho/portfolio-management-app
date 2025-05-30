@@ -17,6 +17,7 @@ interface Props {
   onDeleteItem: (loc: string, index: number) => void;
   onAddItem: (loc: string) => void;
   onRenameLocation: (oldName: string, newName: string) => void; // ✅ 추가
+  onRemoveLocation: (locationName: string) => void; // ✅ 삭제 기능 연결
 }
 
 const LocationList: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const LocationList: React.FC<Props> = ({
   onDeleteItem,
   onAddItem,
   onRenameLocation,
+  onRemoveLocation,
 }) => {
   return (
     <>
@@ -36,7 +38,8 @@ const LocationList: React.FC<Props> = ({
           onUpdate={(i, t, c) => onUpdateItem(location, i, t, c)}
           onDelete={(i) => onDeleteItem(location, i)}
           onAdd={() => onAddItem(location)}
-          onRename={(newName) => onRenameLocation(location, newName)} // ✅ 연결
+          onRename={(newName) => onRenameLocation(location, newName)}
+          onRemove={() => onRemoveLocation(location)}
         />
       ))}
     </>
