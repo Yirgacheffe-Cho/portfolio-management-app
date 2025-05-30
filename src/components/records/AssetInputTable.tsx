@@ -13,9 +13,7 @@ import { useMemo, useState } from 'react';
  */
 export function AssetInputTable() {
   const [investments, setInvestments] = useAtom(recordInvestmentsAtom);
-
-  // ✅ 자동 저장 훅 (debounce 내부 포함)
-  const { isSaving } = useAutoSaveRecord();
+  const { markDirty, isSaving } = useAutoSaveRecord();
 
   const locations = Object.keys(investments);
 
@@ -76,6 +74,7 @@ export function AssetInputTable() {
       ...investments,
       [location]: updated,
     });
+    markDirty();
   };
   return (
     <div className="space-y-2">

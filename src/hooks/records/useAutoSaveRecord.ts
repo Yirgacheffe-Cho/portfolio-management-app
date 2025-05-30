@@ -1,61 +1,47 @@
-import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import {
   selectedDateAtom,
   recordMetaAtom,
   recordInvestmentsAtom,
 } from '@/store/records/recordAtoms';
-import type { Snapshot } from '@/types/report';
 
-import { useDebounce } from '@/hooks/common/useDebounce';
-import { useMutation } from '@tanstack/react-query';
-import { saveRecordToFirestore } from '@/services/recordService';
 import { getSnapPieDataFromMeta } from '@/utils/getSnapPieData';
+import { saveRecordToFirestore } from '@/services/recordService';
 import { saveSnapshotToFirestore } from '@/services/reportSerivce';
+
+import { useAutoSave } from '@/hooks/common/useAutoSave'; // ✅ 범용 훅
+import { useLogger } from '@/utils/logger';
 
 export function useAutoSaveRecord() {
   const date = useAtomValue(selectedDateAtom);
   const meta = useAtomValue(recordMetaAtom);
   const investments = useAtomValue(recordInvestmentsAtom);
+  const log = useLogger(import.meta.url);
 
-  const debouncedInvestments = useDebounce(investments, 2000);
+  const { markDirty, isSaving } = useAutoSave({
+    delay: 2000,
+    deps: [date],
+    canSave: () => !!date,
+    onSave: async () => {
+      if (!date) return;
+      log.debug('💾 자동 저장 시작', { date, meta, investments });
 
-  const mutation = useMutation({
-    mutationFn: async () => {
-      // 🔹 1. 기록 저장
-      await saveRecordToFirestore(date, {
-        ...meta,
-        investments: debouncedInvestments,
-      });
+      await saveRecordToFirestore(date, { ...meta, investments });
 
-      // 🔹 2. 스냅샷 저장 (환율이 있어야만)
       if (meta.exchangeRate && Object.keys(meta.exchangeRate).length > 0) {
-        const data = getSnapPieDataFromMeta(debouncedInvestments, meta);
+        const data = getSnapPieDataFromMeta(investments, meta);
         const total = data.reduce((sum, d) => sum + d.value, 0);
-        const snapshot: Snapshot = {
+        await saveSnapshotToFirestore({
           date,
           total,
-          data: getSnapPieDataFromMeta(debouncedInvestments, meta),
+          data,
           createdAt: Date.now(),
-        };
-
-        await saveSnapshotToFirestore(snapshot);
+        });
       }
+
+      log.debug('✅ 자동 저장 완료');
     },
   });
 
-  const mounted = useRef(false);
-
-  useEffect(() => {
-    if (!date) return;
-    if (!mounted.current) {
-      mounted.current = true;
-      return;
-    }
-    mutation.mutate();
-  }, [debouncedInvestments, date]);
-
-  return {
-    isSaving: mutation.status === 'pending',
-  };
+  return { markDirty, isSaving };
 }
