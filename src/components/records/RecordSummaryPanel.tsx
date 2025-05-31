@@ -11,6 +11,24 @@ import {
 } from '@/utils/getSnapPieData';
 import { PieChartCard } from '@/components/common/PieChartCard';
 import { BarChartCard } from '@/components/common/BarChartCard';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Banknote,
+  BarChart2,
+  PieChart,
+  Building2,
+  CircleDollarSign,
+  Target,
+  AlertTriangle,
+} from 'lucide-react';
 
 export function RecordSummaryPanel() {
   const meta = useAtomValue(recordMetaAtom);
@@ -19,14 +37,14 @@ export function RecordSummaryPanel() {
 
   if (!exchangeRate) {
     return (
-      <div className="text-sm text-red-600">
-        ⚠ 환율 정보가 없습니다. 저장 당시 시세가 포함되지 않았습니다.
+      <div className="flex items-center gap-2 text-sm text-destructive">
+        <AlertTriangle className="w-4 h-4" />
+        환율 정보가 없습니다. 저장 당시 시세가 포함되지 않았습니다.
       </div>
     );
   }
 
   const getKrwValue = getKrwValueFromMeta(meta);
-
   const allRecords = Object.entries(investments).flatMap(([_, list]) => list);
   const total = allRecords.reduce((acc, r) => acc + getKrwValue(r), 0);
 
@@ -36,7 +54,6 @@ export function RecordSummaryPanel() {
     금: 0,
     코인: 0,
   };
-
   const locationTotals: Record<string, number> = {};
   const currencyTotals: Record<string, number> = {};
 
@@ -45,9 +62,7 @@ export function RecordSummaryPanel() {
     records.forEach((r) => {
       const krw = getKrwValue(r);
       sum += krw;
-
       currencyTotals[r.currency] = (currencyTotals[r.currency] ?? 0) + krw;
-
       const assetType = InvestmentToAssetMap[r.type];
       if (assetType) {
         typeTotals[assetType] += krw;
@@ -61,7 +76,8 @@ export function RecordSummaryPanel() {
       const actualAmount = typeTotals[type as AssetType] ?? 0;
       const targetAmount = total * ratio;
       const diff = actualAmount - targetAmount;
-      const percent = (actualAmount / targetAmount) * 100;
+      const percent =
+        targetAmount === 0 ? 0 : (actualAmount / targetAmount) * 100;
       const status =
         percent >= 110 ? '🟢 초과' : percent <= 80 ? '🔴 부족' : '⚪ 근접';
 
@@ -82,7 +98,6 @@ export function RecordSummaryPanel() {
     name: location,
     value: amount,
   }));
-
   const currencyData = Object.entries(currencyTotals).map(([name, value]) => ({
     name,
     value,
@@ -96,72 +111,93 @@ export function RecordSummaryPanel() {
   });
 
   return (
-    <div className="space-y-6 text-sm">
-      <div>💰 총 자산 합계 (환산 기준): ₩{total.toLocaleString()}</div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex items-center gap-2 text-base font-semibold">
+          <Banknote className="w-4 h-4" />총 자산 합계
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          ₩{total.toLocaleString()}
+        </CardContent>
+      </Card>
 
-      <div>
-        📉 저장된 환율 기준:{' '}
-        {Object.entries(exchangeRate).map(([cur, rate]) => (
-          <span key={cur} className="inline-block mr-3">
-            {cur} = ₩{rate.toLocaleString()}
-          </span>
-        ))}
-      </div>
+      <Card>
+        <CardHeader className="flex items-center gap-2 text-base font-semibold">
+          <BarChart2 className="w-4 h-4" />
+          저장된 환율 기준
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+          {Object.entries(exchangeRate).map(([cur, rate]) => (
+            <div key={cur}>
+              {cur} = ₩{rate.toLocaleString()}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
-      <PieChartCard title="📊 자산 구성 (자산 유형 기준)" data={pieData} />
+      <PieChartCard title={'자산 구성 (자산 유형 기준)'} data={pieData} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <BarChartCard title="🏦 보관처별 총 보유액" data={barData} />
+        <BarChartCard title={'보관처별 총 보유액'} data={barData} />
         <PieChartCard
-          title="💱 통화 기준 비중"
+          title={'통화 기준 비중'}
           data={currencyData}
           outerRadius={80}
         />
       </div>
 
-      <table className="w-full text-sm border mt-4">
-        <thead className="bg-muted text-left">
-          <tr>
-            <th className="p-2">자산 유형</th>
-            <th className="p-2">목표 비중</th>
-            <th className="p-2">목표 금액</th>
-            <th className="p-2">실제 금액</th>
-            <th className="p-2">달성률 📈</th>
-            <th className="p-2">차이</th>
-            <th className="p-2">상태</th>
-          </tr>
-        </thead>
-        <tbody>
-          {deltaTable.map((row) => (
-            <tr key={row.type} className="border-t">
-              <td className="p-2">{row.type}</td>
-              <td className="p-2">{(row.ratio * 100).toFixed(1)}%</td>
-              <td className="p-2">₩{row.targetAmount.toLocaleString()}</td>
-              <td className="p-2">₩{row.actualAmount.toLocaleString()}</td>
-              <td className="p-2">{row.percent.toFixed(1)}%</td>
-              <td
-                className={cn(
-                  'p-2 text-right font-mono',
-                  row.diff > 0 && 'text-blue-600',
-                  row.diff < 0 && 'text-red-600',
-                  row.diff === 0 && 'text-muted-foreground',
-                )}
-              >
-                {row.diff > 0 && '+'}
-                {row.diff < 0 && '-'}₩
-                {Math.abs(row.diff).toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}
-              </td>
-              <td className="p-2">{row.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Card>
+        <CardHeader className="flex items-center gap-2 text-base font-semibold">
+          <Target className="w-4 h-4" />
+          목표 달성 현황
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>자산 유형</TableHead>
+                <TableHead>목표 비중</TableHead>
+                <TableHead>목표 금액</TableHead>
+                <TableHead>실제 금액</TableHead>
+                <TableHead>달성률</TableHead>
+                <TableHead className="text-right">차이</TableHead>
+                <TableHead>상태</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {deltaTable.map((row) => (
+                <TableRow key={row.type}>
+                  <TableCell>{row.type}</TableCell>
+                  <TableCell>{(row.ratio * 100).toFixed(1)}%</TableCell>
+                  <TableCell>₩{row.targetAmount.toLocaleString()}</TableCell>
+                  <TableCell>₩{row.actualAmount.toLocaleString()}</TableCell>
+                  <TableCell>{row.percent.toFixed(1)}%</TableCell>
+                  <TableCell
+                    className={cn(
+                      'text-right font-mono',
+                      row.diff > 0 && 'text-blue-600',
+                      row.diff < 0 && 'text-red-600',
+                      row.diff === 0 && 'text-muted-foreground',
+                    )}
+                  >
+                    {row.diff > 0 && '+'}
+                    {row.diff < 0 && '-'}₩
+                    {Math.abs(row.diff).toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}
+                  </TableCell>
+                  <TableCell>{row.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {missing.length > 0 && (
-        <div className="text-red-600">
-          ⚠ 목표 항목 중 입력되지 않은 자산: {missing.join(', ')}
+        <div className="flex items-center gap-2 text-sm text-destructive">
+          <AlertTriangle className="w-4 h-4" />
+          목표 항목 중 입력되지 않은 자산: {missing.join(', ')}
         </div>
       )}
     </div>

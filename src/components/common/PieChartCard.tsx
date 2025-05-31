@@ -14,7 +14,19 @@ import {
   CardFooter,
   CardDescription,
 } from '@/components/ui/card';
-import { TrendingUp } from 'lucide-react';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
+import { TrendingUp, PieChartIcon } from 'lucide-react';
+const CHART_COLORS = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+];
 
 interface PieChartCardProps {
   title: string;
@@ -45,32 +57,41 @@ export function PieChartCard({
   return (
     <Card className="flex flex-col">
       <CardHeader className="pb-0">
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        <CardTitle className="flex items-center gap-2 text-base">
+          <PieChartIcon className="w-4 h-4" />
+          {title}
+        </CardTitle>
+        {description && (
+          <CardDescription className="text-sm">{description}</CardDescription>
+        )}
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ResponsiveContainer width="100%" height={height}>
+        <ChartContainer
+          config={{
+            name: { label: '보관처' },
+            value: { label: '금액' }, // ❌ format 제거
+          }}
+          className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-[300px] pb-0"
+        >
           <PieChart>
+            <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
             <Pie
               data={data}
               dataKey="value"
               nameKey="name"
               outerRadius={outerRadius}
-              label={({ name, percent }) =>
-                `${name} ${(percent * 100).toFixed(1)}%`
-              }
+              label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
             >
-              <LabelList dataKey="name" />
+              <LabelList dataKey="name" fontSize={10} />
               {data.map((_, idx) => (
                 <Cell
-                  key={`cell-${idx}`}
-                  fill={COLORS[(idx + colorOffset) % COLORS.length]}
+                  key={idx}
+                  fill={CHART_COLORS[(idx + colorOffset) % CHART_COLORS.length]}
                 />
               ))}
             </Pie>
-            <Tooltip formatter={(v: number) => `₩${v.toLocaleString()}`} />
           </PieChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
       <CardFooter className="flex items-center gap-2 text-sm text-muted-foreground">
         <TrendingUp className="h-4 w-4" /> 리밸런싱 판단용 분석입니다.

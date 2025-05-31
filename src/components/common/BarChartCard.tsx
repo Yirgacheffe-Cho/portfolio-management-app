@@ -19,7 +19,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { TrendingUp } from 'lucide-react';
-
+import { Building2 } from 'lucide-react';
 interface BarChartCardProps {
   title: string;
   description?: string;
@@ -38,7 +38,10 @@ export function BarChartCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Building2 className="w-4 h-4" />
+          {title}
+        </CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
