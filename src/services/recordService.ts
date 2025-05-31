@@ -73,7 +73,17 @@ export async function createRecordFromTemplate(date: string) {
     exchangeRate, // ✅ 함께 저장
   });
 }
-
+/**
+ * 💾 자산 정보 있는지 확인
+ * - 경로: /users/{uid}/records/{yyyymmdd}
+ */
+export async function checkRecordExists(date: string): Promise<boolean> {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error('로그인이 필요합니다.');
+  const ref = doc(db, 'users', uid, 'records', date);
+  const snap = await getDoc(ref);
+  return snap.exists();
+}
 /**
  * 💾 자산 기록 저장 (덮어쓰기)
  * - 경로: /users/{uid}/records/{yyyymmdd}
