@@ -61,6 +61,7 @@ function Calendar({
   return (
     <div className="min-w-[340px] max-w-fit rounded-md border bg-background p-4 shadow-sm">
       <DayPicker
+        defaultMonth={new Date()}
         captionLayout="dropdown"
         mode="single"
         numberOfMonths={1}

@@ -53,8 +53,8 @@ export async function createRecordFromTemplate(date: string) {
 
   // ✅ 환율 정보 가져오기
   const [usdToKrw, crypto] = await Promise.all([
-    fetchExchangeRates(),
-    fetchCryptoPrices(),
+    fetchExchangeRates(date),
+    fetchCryptoPrices(date),
   ]);
 
   const exchangeRate: Record<string, number> = {
