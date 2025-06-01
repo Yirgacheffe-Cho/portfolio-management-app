@@ -11,7 +11,7 @@ import { AppLayout } from '@/components/layout/AppLayout'; // ✅ 변경된 레�
 const ReportPage = lazy(() => import('@/pages/report/ReportPage'));
 const RecordsPage = lazy(() => import('@/pages/records/RecordsPage'));
 const Templates = lazy(() => import('@/pages/Templates/Templates'));
-const Login = lazy(() => import('@/pages/Login/Login'));
+const Login = lazy(() => import('@pages/login/LoginPage'));
 
 const App: React.FC = () => {
   useAuthListener();
