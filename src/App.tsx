@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import MainLayout from '@/layouts/MainLayout';
 import { useAuthListener } from '@/hooks/auth/useAuthListener';
 import { lazy, Suspense } from 'react';
 import { PageSkeleton } from '@/components/common/PageSkeleton';
 import ConfirmDialogRenderer from '@/components/common/ConfirmDialogRenderer';
 import { Toaster } from 'sonner';
+import { AppLayout } from '@/components/layout/AppLayout'; // ✅ 변경된 레이아웃
+
 // ✨ lazy-load pages
 const ReportPage = lazy(() => import('@/pages/report/ReportPage'));
 const RecordsPage = lazy(() => import('@/pages/records/RecordsPage'));
@@ -21,7 +22,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route element={<MainLayout />}>
+          <Route element={<AppLayout />}>
             <Route
               path="/report"
               element={
