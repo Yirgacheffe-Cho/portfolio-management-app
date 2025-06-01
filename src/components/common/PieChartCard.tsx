@@ -1,11 +1,4 @@
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  LabelList,
-} from 'recharts';
+import { PieChart, Pie, Cell, LabelList } from 'recharts';
 import {
   Card,
   CardHeader,
@@ -34,17 +27,7 @@ interface PieChartCardProps {
   data: { name: string; value: number }[];
   outerRadius?: number;
   colorOffset?: number;
-  height?: number;
 }
-
-const COLORS = [
-  '#0088FE',
-  '#00C49F',
-  '#FFBB28',
-  '#FF8042',
-  '#C93C3C',
-  '#6A67CE',
-];
 
 export function PieChartCard({
   title,
@@ -52,7 +35,6 @@ export function PieChartCard({
   data,
   outerRadius = 100,
   colorOffset = 0,
-  height = 300,
 }: PieChartCardProps) {
   return (
     <Card className="flex flex-col">
@@ -80,7 +62,7 @@ export function PieChartCard({
               dataKey="value"
               nameKey="name"
               outerRadius={outerRadius}
-              label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+              label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
             >
               <LabelList dataKey="name" fontSize={10} />
               {data.map((_, idx) => (

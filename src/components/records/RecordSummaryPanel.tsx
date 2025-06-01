@@ -20,15 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Banknote,
-  BarChart2,
-  PieChart,
-  Building2,
-  CircleDollarSign,
-  Target,
-  AlertTriangle,
-} from 'lucide-react';
+import { Banknote, BarChart2, Target, AlertTriangle } from 'lucide-react';
 
 export function RecordSummaryPanel() {
   const meta = useAtomValue(recordMetaAtom);
