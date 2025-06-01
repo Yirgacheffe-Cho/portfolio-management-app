@@ -37,7 +37,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="border-b px-4 py-4 text-xl font-semibold tracking-tight">
+      <SidebarHeader className="px-4 py-4 text-xl font-semibold tracking-tight">
         Portfolio App
       </SidebarHeader>
       <SidebarContent>

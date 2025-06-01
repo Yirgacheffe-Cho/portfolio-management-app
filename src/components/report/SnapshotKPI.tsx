@@ -58,7 +58,7 @@ export function SnapshotKPI({
         <KpiBox label="총 자산" value={`₩${current.total.toLocaleString()}`} />
 
         <KpiBox
-          label="전달 대비"
+          label="전월 대비"
           value={prev ? formatRate(prev.rate) : '없음'}
           variant={
             prev

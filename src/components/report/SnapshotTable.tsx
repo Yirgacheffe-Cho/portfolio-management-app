@@ -40,7 +40,7 @@ export function SnapshotTable({ snapshots }: Props) {
               </TableHead>
             ))}
             <TableHead className="text-right px-4 py-2">합계</TableHead>
-            <TableHead className="text-right px-4 py-2">전달 증가율</TableHead>
+            <TableHead className="text-right px-4 py-2">전월 증가율</TableHead>
             <TableHead className="text-right px-4 py-2">1년 증가율</TableHead>
           </TableRow>
         </TableHeader>
