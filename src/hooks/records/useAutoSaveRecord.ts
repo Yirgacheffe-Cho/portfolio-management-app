@@ -1,22 +1,24 @@
-import { useState } from 'react';
-import { useAtomValue } from 'jotai';
-import {
-  selectedDateAtom,
-  recordMetaAtom,
-  recordInvestmentsAtom,
-} from '@/store/records/recordAtoms';
-
-import { getSnapPieDataFromMeta } from '@/utils/getSnapPieData';
+import { useDebouncedAction } from '@hooks/common/useDebouncedAction';
 import { saveRecordToFirestore } from '@/services/recordService';
 import { saveSnapshotToFirestore } from '@/services/reportSerivce';
-
-import { useDebouncedAction } from '@hooks/common/useDebouncedAction'; // ✅ 범용 훅
+import { getSnapPieDataFromMeta } from '@/utils/getSnapPieData';
 import { useLogger } from '@/utils/logger';
+import { useState } from 'react';
 
-export function useAutoSaveRecord() {
-  const date = useAtomValue(selectedDateAtom);
-  const meta = useAtomValue(recordMetaAtom);
-  const investments = useAtomValue(recordInvestmentsAtom);
+import type { InvestmentMap } from '@/types/asset';
+import type { RecordMeta } from '@/types/record';
+
+/**
+ * 💾 useAutoSaveRecord (in-place 버전)
+ *
+ * - 외부에서 넘겨받은 investments/meta/date를 기준으로 저장
+ * - jotai 상태 변경 없음
+ */
+export function useAutoSaveRecord(
+  investments: InvestmentMap,
+  meta: RecordMeta,
+  date: string,
+) {
   const log = useLogger(import.meta.url);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -41,10 +43,12 @@ export function useAutoSaveRecord() {
       }
 
       log.debug('✅ 자동 저장 완료');
+    } catch (err) {
+      log.error('❌ 저장 실패', err);
     } finally {
       setIsSaving(false);
     }
-  }, 2000);
+  }, 1000); // 1초 디바운스
 
   return { trigger, isSaving };
 }
