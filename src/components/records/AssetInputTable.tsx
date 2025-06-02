@@ -1,23 +1,26 @@
 import { useAtom } from 'jotai';
 import { recordInvestmentsAtom } from '@/store/records/recordAtoms';
-import { useAutoSaveRecord } from '@/hooks/records/useAutoSaveRecord';
+import { useAutoSaveRecord } from '@hooks/records/useAutoSaveRecord';
 import { Input } from '@/components/ui/input';
 import { useMemo, useState } from 'react';
 
-/**
- * 📥 AssetInputTable
- * - 상태: recordInvestmentsAtom
- * - 자동 저장: useAutoSaveRecord 내부에서 감지
- * - 해당 location에 없는 자산은 입력 불가로 "-" 표시
- * - 소수점 입력을 위해 string 상태값 별도 관리
- */
+const getInputKey = (location: string, assetKey: string) =>
+  `${location}_${assetKey}`;
+
+const isValidNumberInput = (value: string) => /^(\d+)?(\.)?(\d+)?$/.test(value);
+
+const parseAmount = (value: string): number | null => {
+  const parsed = Number(value);
+  return !value || isNaN(parsed) || parsed <= 0 ? null : parsed;
+};
+
 export function AssetInputTable() {
   const [investments, setInvestments] = useAtom(recordInvestmentsAtom);
-  const { markDirty, isSaving } = useAutoSaveRecord();
+  const { trigger, isSaving } = useAutoSaveRecord(); // ✅ 변경된 훅
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
 
   const locations = Object.keys(investments);
 
-  // ✅ 모든 자산 종류 추출 (type + currency 조합으로 고유 키 구성)
   const assetKeys = useMemo(
     () =>
       Array.from(
@@ -35,55 +38,28 @@ export function AssetInputTable() {
     return `${type} (${currency})`;
   });
 
-  // ✅ 입력 문자열 상태를 따로 관리하여 소수점 중간 입력 지원
-  const [inputValues, setInputValues] = useState<Record<string, string>>({});
-
   const handleInput = (location: string, assetKey: string, value: string) => {
-    const inputKey = `${location}_${assetKey}`;
+    const inputKey = getInputKey(location, assetKey);
     setInputValues((prev) => ({ ...prev, [inputKey]: value }));
-  };
-  const handleBlur = (location: string, assetKey: string) => {
-    const inputKey = `${location}_${assetKey}`;
-    const value = inputValues[inputKey];
+
+    const parsed = parseAmount(value);
+    if (parsed === null) return;
+
     const [type, currency] = assetKey.split('_');
-
-    const parsed = Number(value);
-
-    const originalAsset = investments[location].find(
-      (r) => r.type === type && r.currency === currency,
+    const updated = investments[location].map((r) =>
+      r.type === type && r.currency === currency ? { ...r, amount: parsed } : r,
     );
 
-    // ✅ 유효성 검사 실패 → 입력 복원
-    if (!value || isNaN(parsed) || parsed <= 0) {
-      setInputValues((prev) => ({
-        ...prev,
-        [inputKey]: originalAsset?.amount?.toString() ?? '',
-      }));
-      return;
-    }
-
-    // ✅ 유효 → 실제 상태 반영
-    const updated = investments[location].map((r) => {
-      if (r.type === type && r.currency === currency) {
-        return { ...r, amount: parsed };
-      }
-      return r;
-    });
-
-    setInvestments({
-      ...investments,
-      [location]: updated,
-    });
-    markDirty();
+    setInvestments({ ...investments, [location]: updated });
+    trigger.trigger(); // ✅ 디바운싱된 저장 트리거
   };
+
   return (
     <div className="space-y-2">
-      {/* 저장 상태 표시 */}
       <div className="text-sm text-muted-foreground px-1">
         {isSaving ? '저장 중...' : '자동 저장됨'}
       </div>
 
-      {/* 자산 테이블 */}
       <div className="overflow-auto rounded-md border">
         <table className="min-w-full text-sm text-center">
           <thead>
@@ -105,24 +81,25 @@ export function AssetInputTable() {
                     (r) => `${r.type}_${r.currency}` === assetKey,
                   );
                   const isEditable = !!asset;
+                  const inputKey = getInputKey(location, assetKey);
 
                   return (
                     <td key={assetKey} className="px-1 py-1">
                       {isEditable ? (
                         <Input
                           type="text"
-                          inputMode="decimal" // 모바일에서도 숫자 키패드 유도
+                          inputMode="decimal"
                           className="w-24 text-right"
                           value={
-                            inputValues[`${location}_${assetKey}`] ??
+                            inputValues[inputKey] ??
                             asset?.amount?.toString() ??
                             ''
                           }
                           onChange={(e) => {
-                            handleInput(location, assetKey, e.target.value);
-                          }}
-                          onBlur={() => {
-                            handleBlur(location, assetKey);
+                            const raw = e.target.value;
+                            if (isValidNumberInput(raw) || raw === '') {
+                              handleInput(location, assetKey, raw);
+                            }
                           }}
                         />
                       ) : (

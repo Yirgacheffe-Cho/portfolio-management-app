@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import {
   selectedDateAtom,
@@ -9,7 +10,7 @@ import { getSnapPieDataFromMeta } from '@/utils/getSnapPieData';
 import { saveRecordToFirestore } from '@/services/recordService';
 import { saveSnapshotToFirestore } from '@/services/reportSerivce';
 
-import { useAutoSave } from '@/hooks/common/useAutoSave'; // ✅ 범용 훅
+import { useDebouncedAction } from '@hooks/common/useDebouncedAction'; // ✅ 범용 훅
 import { useLogger } from '@/utils/logger';
 
 export function useAutoSaveRecord() {
@@ -17,13 +18,13 @@ export function useAutoSaveRecord() {
   const meta = useAtomValue(recordMetaAtom);
   const investments = useAtomValue(recordInvestmentsAtom);
   const log = useLogger(import.meta.url);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const { markDirty, isSaving } = useAutoSave({
-    delay: 2000,
-    deps: [date],
-    canSave: () => !!date,
-    onSave: async () => {
-      if (!date) return;
+  const trigger = useDebouncedAction(async () => {
+    if (!date) return;
+
+    setIsSaving(true);
+    try {
       log.debug('💾 자동 저장 시작', { date, meta, investments });
 
       await saveRecordToFirestore(date, { ...meta, investments });
@@ -40,8 +41,10 @@ export function useAutoSaveRecord() {
       }
 
       log.debug('✅ 자동 저장 완료');
-    },
-  });
+    } finally {
+      setIsSaving(false);
+    }
+  }, 2000);
 
-  return { markDirty, isSaving };
+  return { trigger, isSaving };
 }
