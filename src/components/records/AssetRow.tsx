@@ -8,7 +8,7 @@ type Props = {
   date: string;
 };
 
-export function AssetRow({ location, assetKeys, records, date }: Props) {
+export function AssetRow({ location, assetKeys, records }: Props) {
   return (
     <tr className="border-t">
       <td className="font-medium px-2 py-1">{location}</td>

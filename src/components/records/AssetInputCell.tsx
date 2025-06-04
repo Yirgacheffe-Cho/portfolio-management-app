@@ -19,7 +19,6 @@ type Props = {
 export function AssetInputCell({ amount, location, type, currency }: Props) {
   const [local, setLocal] = useState(amount?.toString() ?? '');
   const isValidNumberInput = (val: string) => /^(\d+)?(\.)?(\d+)?$/.test(val);
-  console.log(local);
   // 외부 값 동기화
   useEffect(() => {
     setLocal(amount?.toString() ?? '');
