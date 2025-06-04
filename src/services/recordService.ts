@@ -4,6 +4,7 @@ import type { AssetRecord, InvestmentMap } from '@/types/asset';
 import type { RecordMeta } from '@/types/record';
 import { getUserTemplate } from './templateService';
 import { fetchExchangeRates, fetchCryptoPrices } from './exchangeService';
+import { toast } from 'sonner';
 
 /**
  * 📘 특정 일자 기록 조회
@@ -51,7 +52,6 @@ export async function createRecordFromTemplate(date: string) {
   const template = await getUserTemplate();
   if (!template) throw new Error('템플릿 없음');
 
-  // ✅ 환율 정보 가져오기
   const [usdToKrw, crypto] = await Promise.all([
     fetchExchangeRates(date),
     fetchCryptoPrices(date),
@@ -63,6 +63,12 @@ export async function createRecordFromTemplate(date: string) {
     ETH: crypto.ETH,
   };
 
+  if (Object.values(exchangeRate).some((v) => v === 0)) {
+    toast.warning('환율 정보 일부를 가져오지 못했습니다.', {
+      description: '기록은 저장되었지만 가격 정보가 부정확할 수 있어요.',
+    });
+  }
+
   const { savingsGoal, savingRate, targetAllocation, investments } = template;
 
   await setDoc(doc(db, 'users', uid, 'records', date), {
@@ -70,7 +76,7 @@ export async function createRecordFromTemplate(date: string) {
     savingRate,
     targetAllocation,
     investments,
-    exchangeRate, // ✅ 함께 저장
+    exchangeRate,
   });
 }
 /**
