@@ -8,7 +8,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ListChecks, FileBox } from 'lucide-react';
+import { LayoutDashboard, ListChecks, FileBox, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 import { useMediaQuery } from '@/hooks/common/useMediaQuery';
@@ -33,6 +33,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     { label: '리포트', path: '/report', icon: LayoutDashboard },
     { label: '템플릿 설정', path: '/templates', icon: ListChecks },
     { label: '자산 기록', path: '/records', icon: FileBox },
+    { label: '티커 검색', path: '/stock', icon: Search },
   ];
 
   return (

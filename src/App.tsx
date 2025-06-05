@@ -12,6 +12,7 @@ const ReportPage = lazy(() => import('@/pages/report/ReportPage'));
 const RecordsPage = lazy(() => import('@/pages/records/RecordsPage'));
 const Templates = lazy(() => import('@/pages/Templates/Templates'));
 const Login = lazy(() => import('@pages/login/LoginPage'));
+const StockPage = lazy(() => import('@pages/stock/StockPage'));
 
 const App: React.FC = () => {
   useAuthListener();
@@ -52,6 +53,14 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <RecordsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stock"
+              element={
+                <ProtectedRoute>
+                  <StockPage />
                 </ProtectedRoute>
               }
             />
