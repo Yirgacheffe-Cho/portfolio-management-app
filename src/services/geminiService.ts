@@ -1,3 +1,5 @@
+import { type TickerItem } from '@/types/stock';
+
 export async function fetchGeminiInsight(prompt: string): Promise<string> {
   try {
     if (prompt.length > 10000) {
@@ -22,6 +24,31 @@ export async function fetchGeminiInsight(prompt: string): Promise<string> {
     return text ?? '❌ 분석 실패 (빈 응답)';
   } catch (err) {
     console.error('[fetchGeminiInsight] 예외 발생:', err);
+    return '❌ Gemini 호출 중 네트워크 오류 발생';
+  }
+}
+export async function fetchGeminiStockInfo(
+  stockInfo: TickerItem,
+): Promise<string> {
+  try {
+    const res = await fetch(
+      'https://vercel-api-yirgacheffe-chos-projects.vercel.app/api/stock-info',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stockInfo }), // ✅ 수정
+      },
+    );
+
+    if (!res.ok) {
+      console.error('❌ Gemini API 응답 오류:', res.status);
+      return `❌ Gemini API 오류 (${res.status})`;
+    }
+
+    const text = await res.text();
+    return text ?? '❌ 분석 실패 (빈 응답)';
+  } catch (err) {
+    console.error('[fetchGeminiStockInfo] 예외 발생:', err);
     return '❌ Gemini 호출 중 네트워크 오류 발생';
   }
 }
