@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main # main 브랜치에 Push될 때 실행
+      - main
 
 jobs:
   build:
@@ -29,8 +29,13 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Install Firebase CLI # ✅ Firebase CLI 설치 추가
+      - name: Install Firebase CLI
         run: npm install -g firebase-tools
+
+      - name: Link firebase config
+        run: |
+          ln -s config/firebase/firebase.json ./firebase.json
+          ln -s config/firebase/.firebaserc ./.firebaserc
 
       - name: Deploy to Firebase Hosting
         env:
