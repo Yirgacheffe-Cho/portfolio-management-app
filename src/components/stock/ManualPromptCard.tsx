@@ -53,17 +53,12 @@ export function ManualPromptCard({ selected }: Props) {
             <ExternalLink className="w-4 h-4 mr-1" />
             열기
           </Button>
-          <Button
-            onClick={handleGenerate}
-            disabled={!selected || generated || showSpinner}
-          >
+          <Button onClick={handleGenerate} disabled={!selected || showSpinner}>
             {showSpinner ? (
               <span className="flex items-center gap-2">
                 <span className="animate-spin h-4 w-4 border-2 border-muted border-t-transparent rounded-full" />
                 생성 중...
               </span>
-            ) : generated ? (
-              '완료됨'
             ) : (
               '프롬프트 생성'
             )}
@@ -105,7 +100,7 @@ export function ManualPromptCard({ selected }: Props) {
                 )}
               </Button>
             </div>
-            <div className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/50 p-4 rounded-md border text-muted-foreground max-h-[400px] overflow-auto">
+            <div className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/50 p-4 rounded-md border text-muted-foreground h-[100px] overflow-auto">
               {prompt}
             </div>
           </div>

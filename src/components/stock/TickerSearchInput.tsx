@@ -1,5 +1,5 @@
 // components/stock/TickerSearchInput.tsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useUnifiedTickerSearch } from '@/hooks/stock/useUnifiedTickerSearch';
 import { useDebouncedAction } from '@/hooks/common/useDebouncedAction';
 import { Input } from '@/components/ui/input';
@@ -67,10 +67,9 @@ export function TickerSearchInput({ onSelect, placeholder, autoFocus }: Props) {
         onFocus={() => input && setShowDropdown(true)}
       />
 
-      {loading && (
-        <p className="text-sm text-muted-foreground mt-1">🔄 검색 중...</p>
-      )}
-
+      <p className="text-sm text-muted-foreground mt-1">
+        {loading ? '🔄 검색 중...' : ''}
+      </p>
       {showDropdown && results.length > 0 && (
         <Card className="absolute z-10 w-full mt-2 border p-2 rounded-xl shadow-xl">
           <ul className="divide-y divide-muted max-h-64 overflow-y-auto">
