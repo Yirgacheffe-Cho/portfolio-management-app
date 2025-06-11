@@ -17,7 +17,7 @@ export function TickerSearchInput({ onSelect, placeholder, autoFocus }: Props) {
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const { results, search, loading } = useUnifiedTickerSearch();
+  const { results, search } = useUnifiedTickerSearch();
 
   const { trigger: triggerSearch } = useDebouncedAction((q: string) => {
     search(q);
@@ -66,10 +66,6 @@ export function TickerSearchInput({ onSelect, placeholder, autoFocus }: Props) {
         autoFocus={autoFocus}
         onFocus={() => input && setShowDropdown(true)}
       />
-
-      <p className="text-sm text-muted-foreground mt-1">
-        {loading ? '🔄 검색 중...' : ''}
-      </p>
       {showDropdown && results.length > 0 && (
         <Card className="absolute z-10 w-full mt-2 border p-2 rounded-xl shadow-xl">
           <ul className="divide-y divide-muted max-h-64 overflow-y-auto">

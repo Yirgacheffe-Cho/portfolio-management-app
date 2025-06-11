@@ -13,7 +13,6 @@ type Props = {
 export function ManualPromptCard({ selected }: Props) {
   const [prompt, setPrompt] = useState('');
   const [copied, setCopied] = useState(false);
-  const [generated, setGenerated] = useState(false);
   const [isPendingTransition, startTransition] = useTransition();
 
   const handleGenerate = () => {
@@ -22,7 +21,6 @@ export function ManualPromptCard({ selected }: Props) {
       const jsonPrompt = generateManualPrompt(selected);
       const promptText = JSON.stringify(jsonPrompt, null, 2);
       setPrompt(promptText);
-      setGenerated(true);
     });
   };
 
@@ -51,7 +49,7 @@ export function ManualPromptCard({ selected }: Props) {
             onClick={() => window.open('https://www.perplexity.ai/', '_blank')}
           >
             <ExternalLink className="w-4 h-4 mr-1" />
-            열기
+            Perplexity 열기
           </Button>
           <Button onClick={handleGenerate} disabled={!selected || showSpinner}>
             {showSpinner ? (
@@ -67,10 +65,7 @@ export function ManualPromptCard({ selected }: Props) {
       </CardHeader>
 
       <CardContent
-        className={cn(
-          'px-4 transition-all duration-300 space-y-4',
-          prompt || showSkeleton ? 'min-h-[160px]' : 'min-h-[150px] py-10',
-        )}
+        className={cn('px-4 transition-all duration-300 space-y-4 ')}
       >
         {showSpinner ? (
           <div className="flex h-full items-center justify-center text-muted-foreground text-sm">

@@ -24,7 +24,7 @@ export function generateAnalysisReportPrompt(stockInfo: TickerItem): object {
       overall_guidance: `
         제공된 ${name || '기업'} 주식 정보를 바탕으로 전문가 수준의 심층 분석 리포트를 작성해 주십시오.
         모든 주장은 제공된 정보에 근거하며, 객관적이고 중립적인 분석을 수행해야 합니다.
-        일반 및 기관 투자자가 이해하기 쉽도록 명확하고 간결하게 작성하십시오.
+        일반 개인 투자자가 이해하기 쉽도록 명확하고 간결하게 작성하십시오.
       `,
       report_structure: [
         {
@@ -68,7 +68,7 @@ export function generateAnalysisReportPrompt(stockInfo: TickerItem): object {
             - 산정 방식 핵심 지표 (예: 예상 EPS, 적용 PER, 성장률 가정)
             - 동종 업계/과거 평균 대비 상대적 분석
             - 밸류에이션 방식 선택 이유 (예: PER, DCF, EV/EBITDA)
-            - 애널리스트 목표 주가와 비교 및 차이 설명
+            - 애널리스트 목표 주가와 비교 및 차이 설명 **(단순 비교가 아닌, AI의 독자적 분석 결과와의 차이점 및 유사점을 설명)**
             ⚠️ 주의: 애널리스트 목표 주가 단순 반복 금지. AI 스스로 해석 및 수치 도출.
           `.trim(),
         },
