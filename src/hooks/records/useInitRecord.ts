@@ -22,23 +22,20 @@ import { getRecordFromFirestore } from '@/services/recordService';
 import { useLogger } from '@/utils/logger';
 
 export function useInitRecord() {
-  // 📌 현재 선택된 날짜 상태 가져오기
   const date = useAtomValue(selectedDateAtom);
   const log = useLogger(import.meta.url);
-  // 📌 상태 setters
+
   const setMeta = useSetAtom(recordMetaAtom);
   const setInvestments = useSetAtom(recordInvestmentsAtom);
 
-  // 📡 Firestore에서 기록 fetch (date 변경되면 자동 재요청됨)
   const { data } = useQuery({
-    queryKey: ['record', date], // 🔁 date 변경되면 자동 재요청
+    queryKey: ['record', date],
     queryFn: () => getRecordFromFirestore(date),
-    enabled: !!date, // ⚠ 빈 날짜일 땐 실행 방지
+    enabled: !!date,
   });
 
   useEffect(() => {
     if (data) {
-      // ✅ 기록이 존재할 경우 → 상태 반영
       log.info(`📘 기록 불러오기 완료: ${date}`);
       setMeta({
         savingsGoal: data.savingsGoal,
@@ -50,5 +47,17 @@ export function useInitRecord() {
     } else {
       log.warn(`❗ 기록도 템플릿도 없음 → 초기화 실패: ${date}`);
     }
+
+    // 🔁 언마운트 시 상태 초기화
+    return () => {
+      log.info(`🧹 언마운트 → 기록 상태 초기화`);
+      setMeta({
+        savingsGoal: 0,
+        savingRate: 0,
+        targetAllocation: {},
+        exchangeRate: {},
+      });
+      setInvestments({});
+    };
   }, [data]);
 }

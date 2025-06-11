@@ -1,8 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useSetAtom } from 'jotai';
-import { selectedDateAtom } from '@/store/records/recordAtoms';
-import { useInitRecord } from '@/hooks/records/useInitRecord';
+import { useRecordPageInit } from '@/hooks/records/useRecordPageInit';
 import { RecordPageHeader } from '@/components/records/RecordPageHeader';
 import { RecordTabView } from '@/components/records/RecordTabView';
 
@@ -12,15 +9,8 @@ import { RecordTabView } from '@/components/records/RecordTabView';
  */
 function RecordsPage() {
   const { date } = useParams(); // ✅ '/records/:date'
-  const setDate = useSetAtom(selectedDateAtom);
 
-  useEffect(() => {
-    if (typeof date === 'string') {
-      setDate(date);
-    }
-  }, [date, setDate]);
-
-  useInitRecord();
+  useRecordPageInit(date);
 
   return (
     <div className="p-4 space-y-4">
