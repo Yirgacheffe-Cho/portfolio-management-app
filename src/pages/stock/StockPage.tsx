@@ -1,22 +1,24 @@
 // pages/StockPage.tsx
-import { TickerSearchInput } from '@/components/stock/TickerSearchInput';
-import { useState } from 'react';
-import { type TickerItem } from '@/types/stock';
-import { AIInsightCard } from '@/components/common/AIInsightCard';
+import { useState, useCallback } from 'react';
+import { useSetAtom, useAtomValue } from 'jotai';
+import { selectedTickerAtom } from '@/store/stock/selectedTickerAtom';
 import { useGeminiStockInsight } from '@/hooks/stock/useGeminiStockInsight';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { TickerSearchInput } from '@/components/stock/TickerSearchInput';
+import { StockAITab } from '@/components/stock/StockAITab';
 import { ManualPromptCard } from '@/components/stock/ManualPromptCard';
 import { PerplexityResultCard } from '@/components/stock/PerplexityResultCard';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 function StockPage() {
-  const [selected, setSelected] = useState<TickerItem | null>(null);
+  const selected = useAtomValue(selectedTickerAtom);
+  const setSelected = useSetAtom(selectedTickerAtom);
   const { mutateAsync } = useGeminiStockInsight();
   const [mode, setMode] = useState<'ai' | 'manual'>('ai');
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = useCallback(async () => {
     if (!selected) return '❌ 종목이 선택되지 않았습니다.';
     return await mutateAsync(selected);
-  };
+  }, [selected, mutateAsync]);
 
   return (
     <div className="p-4 space-y-6">
@@ -29,8 +31,9 @@ function StockPage() {
           선택된 종목: <strong>{selected.name}</strong> ({selected.symbol})
         </div>
       ) : (
-        <div className="text-sm text-muted-foreground">&nbsp;</div> // 공간 유지용
+        <div className="text-sm text-muted-foreground">&nbsp;</div>
       )}
+
       <Tabs
         value={mode}
         onValueChange={(v) => setMode(v as 'ai' | 'manual')}
@@ -43,17 +46,11 @@ function StockPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="ai">
-          <AIInsightCard
-            title={`${selected?.name || '종목'} 정보`}
-            onAnalyze={handleAnalyze}
-            disabled={!selected}
-          />
-        </TabsContent>
+        <StockAITab handleAnalyze={handleAnalyze} />
 
         <TabsContent value="manual">
-          <ManualPromptCard selected={selected} />
-          <PerplexityResultCard selected={selected} />
+          <ManualPromptCard />
+          <PerplexityResultCard />
         </TabsContent>
       </Tabs>
     </div>
