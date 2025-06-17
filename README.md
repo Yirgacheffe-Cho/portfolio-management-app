@@ -7,6 +7,10 @@
 > 📈 투자 수익률과 포트폴리오 흐름을 분석하는 구조
 
 
+🔗 [앱 바로가기](https://cho-project-1-82b97.web.app)  
+📝 [개발기 보러가기](https://velog.io/@xknight/posts)
+
+
 ---
 
 ## 🚀 주요 기능
