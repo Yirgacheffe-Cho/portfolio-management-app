@@ -8,23 +8,25 @@ export function useChatSession() {
   const [messageAtoms, setMessageAtoms] = useAtom(chatMessageAtomsAtom);
 
   const sendUserMessage = (content: string) => {
-    const newAtom = atom<ChatMessage>({
-      id: uuidv4(),
+    const id = uuidv4();
+    const msgAtom = atom<ChatMessage>({
+      id,
       role: 'user',
       content,
       createdAt: new Date().toISOString(),
     });
-    setMessageAtoms((prev) => [...prev, newAtom]);
+    setMessageAtoms((prev) => [...prev, { id, atom: msgAtom }]);
   };
 
   const appendAssistantMessage = (content: string) => {
-    const newAtom = atom<ChatMessage>({
-      id: uuidv4(),
+    const id = uuidv4();
+    const msgAtom = atom<ChatMessage>({
+      id,
       role: 'assistant',
       content,
       createdAt: new Date().toISOString(),
     });
-    setMessageAtoms((prev) => [...prev, newAtom]);
+    setMessageAtoms((prev) => [...prev, { id, atom: msgAtom }]);
   };
 
   const clearMessages = () => setMessageAtoms([]);

@@ -1,24 +1,35 @@
-// components/stock/StockChatPanel.tsx
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useAtomValue } from 'jotai';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare } from 'lucide-react';
 import { useChatSession } from '@/hooks/chat/useChatSession';
 import { MessageBubble } from '@/components/chat/MessageBubble';
+import { aiInsightResultAtom } from '@/store/stock/aiInsightAtom';
 
 export function StockChatPanel() {
   const [input, setInput] = useState('');
   const { messageAtoms, sendUserMessage, appendAssistantMessage } =
     useChatSession();
-
+  const insight = useAtomValue(aiInsightResultAtom);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  // ✅ 메시지 추가 시 스크롤 맨 아래로
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messageAtoms.length]);
+  // ✅ 최초 분석 결과를 첫 assistant 메시지로 삽입
+  useEffect(() => {
+    if (messageAtoms.length === 0 && insight) {
+      appendAssistantMessage(insight);
+    }
+  }, [insight, messageAtoms.length, appendAssistantMessage]);
+  useEffect(() => {
+    console.log('messageAtoms:', messageAtoms);
+  }, [messageAtoms]);
   const handleSend = async () => {
     if (!input.trim()) return;
     sendUserMessage(input);
-
-    // mock 응답 (향후 Gemini 연동)
-    const reply = `📈 "${input}"에 대한 분석 결과는 긍정적입니다.`;
-    appendAssistantMessage(reply);
     setInput('');
   };
 
@@ -28,13 +39,12 @@ export function StockChatPanel() {
         <MessageSquare className="w-5 h-5" />
         리포트 기반 Q&A
       </h3>
-
       <ScrollArea className="h-[300px] border bg-background rounded-md p-3 mb-3">
-        {messageAtoms.map((atom, idx) => (
-          <MessageBubble key={idx} messageAtom={atom} />
+        {messageAtoms.map(({ id, atom }) => (
+          <MessageBubble key={id} messageAtom={atom} />
         ))}
+        <div ref={bottomRef} /> {/* ✅ 스크롤 대상 */}
       </ScrollArea>
-
       <div className="flex gap-2">
         <Input
           value={input}

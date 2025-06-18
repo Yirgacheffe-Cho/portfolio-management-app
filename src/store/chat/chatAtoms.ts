@@ -8,7 +8,7 @@ export type ChatMessage = {
   createdAt: string;
 };
 
-// 개별 메시지를 감싸는 atom들의 배열
+// 메시지 atom을 id와 함께 관리
 export const chatMessageAtomsAtom = atom<
-  ReturnType<typeof atom<ChatMessage>>[]
+  { id: string; atom: ReturnType<typeof atom<ChatMessage>> }[]
 >([]);
