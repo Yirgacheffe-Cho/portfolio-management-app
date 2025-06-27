@@ -7,6 +7,7 @@ import { TickerSearchInput } from '@/components/stock/TickerSearchInput';
 import { StockAITab } from '@/components/stock/StockAITab';
 import { ManualPromptCard } from '@/components/stock/ManualPromptCard';
 import { PerplexityResultCard } from '@/components/stock/PerplexityResultCard';
+import { useResetOnMount } from '@/hooks/common/useResetOnMount';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 function StockPage() {
@@ -14,7 +15,7 @@ function StockPage() {
   const setSelected = useSetAtom(selectedTickerAtom);
   const { mutateAsync } = useGeminiStockInsight();
   const [mode, setMode] = useState<'ai' | 'manual'>('ai');
-
+  useResetOnMount(selectedTickerAtom, null);
   const handleAnalyze = useCallback(async () => {
     if (!selected) return '❌ 종목이 선택되지 않았습니다.';
     return await mutateAsync(selected);
