@@ -41,15 +41,16 @@ export function AIInsightCard({
     setIsAnalyzed(false);
   }, [selected?.symbol]);
   const handleClick = () => {
+    // 즉시 빠르게 처리해도 되는 부분
+    setIsAnalyzed(false);
+    setResult('');
+    // 느린 업데이트는 startTransition 내부로
     startTransition(async () => {
-      setIsAnalyzed(false);
-      setResult('');
       const res = await onAnalyze();
       setResult(res);
       setIsAnalyzed(true);
     });
   };
-
   const showSpinner = isPending;
 
   return (
