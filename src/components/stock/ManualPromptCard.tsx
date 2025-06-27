@@ -1,16 +1,16 @@
+// components/stock/ManualPromptCard.tsx
+
 import { useState, useTransition } from 'react';
+import { useAtomValue } from 'jotai';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { generateManualPrompt } from '@/utils/generateManualPrompt';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, ExternalLink } from 'lucide-react';
-import { type TickerItem } from '@/types/stock';
+import { selectedTickerAtom } from '@/store/stock/selectedTickerAtom';
 import { cn } from '@/lib/utils';
 
-type Props = {
-  selected: TickerItem | null;
-};
-
-export function ManualPromptCard({ selected }: Props) {
+export function ManualPromptCard() {
+  const selected = useAtomValue(selectedTickerAtom);
   const [prompt, setPrompt] = useState('');
   const [copied, setCopied] = useState(false);
   const [isPendingTransition, startTransition] = useTransition();

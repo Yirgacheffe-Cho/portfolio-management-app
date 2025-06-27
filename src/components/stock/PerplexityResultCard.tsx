@@ -1,17 +1,17 @@
+// components/stock/PerplexityResultCard.tsx
+
 import { useState, useTransition } from 'react';
+import { useAtomValue } from 'jotai';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { AIReportCard } from '@/components/report/AIReportCard';
 import { createFinalPrompt } from '@/utils/createFinalPrompt';
 import { useGeminiInsight } from '@/hooks/report/useGeminiInsight';
-import { type TickerItem } from '@/types/stock';
+import { selectedTickerAtom } from '@/store/stock/selectedTickerAtom';
 
-type Props = {
-  selected: TickerItem | null;
-};
-
-export function PerplexityResultCard({ selected }: Props) {
+export function PerplexityResultCard() {
+  const selected = useAtomValue(selectedTickerAtom);
   const [text, setText] = useState('');
   const [result, setResult] = useState('');
   const [isPending, startTransition] = useTransition();

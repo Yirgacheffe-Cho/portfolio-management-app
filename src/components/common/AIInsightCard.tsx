@@ -1,39 +1,60 @@
 // components/ai/AIInsightCard.tsx
 
-import { useState, useTransition } from 'react';
+import { useEffect, useTransition, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { selectedTickerAtom } from '@/store/stock/selectedTickerAtom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AIReportCard } from '@/components/report/AIReportCard';
 import { BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  aiInsightResultAtom,
+  isAIAnalyzedAtom,
+} from '@/store/stock/aiInsightAtom';
 
 type Props = {
   title: string;
   onAnalyze: () => Promise<string>;
   disabled?: boolean;
+  resetOnDisabledChange?: boolean;
 };
 
-export function AIInsightCard({ title, onAnalyze, disabled }: Props) {
-  const [result, setResult] = useState('');
-  const [analyzed, setAnalyzed] = useState(false);
-  const [isPendingTransition, startTransition] = useTransition();
+export function AIInsightCard({
+  title,
+  onAnalyze,
+  disabled,
+  resetOnDisabledChange,
+}: Props) {
+  const result = useAtomValue(aiInsightResultAtom); // 읽기 전용 분석 결과
+  const analyzed = useAtomValue(isAIAnalyzedAtom); // 분석 완료 여부
+  const setResult = useSetAtom(aiInsightResultAtom); // 분석 결과 갱신용 setter
+  const selected = useAtomValue(selectedTickerAtom);
+  const [isAnalyzed, setIsAnalyzed] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
+  useEffect(() => {
+    if (resetOnDisabledChange) setResult('');
+  }, [disabled, resetOnDisabledChange, setResult]);
+  // ✅ 종목이 바뀌면 분석 상태 리셋
+  useEffect(() => {
+    setIsAnalyzed(false);
+  }, [selected?.symbol]);
   const handleClick = () => {
+    // 즉시 빠르게 처리해도 되는 부분
+    setIsAnalyzed(false);
+    setResult('');
+    // 느린 업데이트는 startTransition 내부로
     startTransition(async () => {
       const res = await onAnalyze();
       setResult(res);
-      setAnalyzed(true);
+      setIsAnalyzed(true);
     });
   };
-
-  const showSpinner = isPendingTransition;
-
-  const showSkeleton = disabled && !analyzed && !result;
+  const showSpinner = isPending;
 
   return (
     <Card className="w-full">
-      {' '}
-      {/* Card의 width는 w-full로 괜찮습니다. */}
       <CardHeader className="flex flex-row justify-between items-center pb-2">
         <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
           <BrainCircuit className="w-4 h-4 text-muted-foreground" />
@@ -41,14 +62,14 @@ export function AIInsightCard({ title, onAnalyze, disabled }: Props) {
         </CardTitle>
         <Button
           onClick={handleClick}
-          disabled={disabled || showSpinner || analyzed}
+          disabled={disabled || showSpinner || isAnalyzed}
         >
           {showSpinner ? (
             <span className="flex items-center gap-2">
               <span className="animate-spin h-4 w-4 border-2 border-muted border-t-transparent rounded-full" />
               분석 중...
             </span>
-          ) : analyzed ? (
+          ) : isAnalyzed ? (
             '분석 완료'
           ) : (
             '분석하기'
@@ -57,8 +78,8 @@ export function AIInsightCard({ title, onAnalyze, disabled }: Props) {
       </CardHeader>
       <CardContent
         className={cn(
-          'px-4 transition-all duration-300', // 💡 여기에서 'overflow-hidden' 제거!
-          result || showSkeleton ? 'h-[400px]' : 'min-h-[150px] py-10',
+          'px-4 transition-all duration-300',
+          analyzed ? 'h-[400px]' : 'min-h-[150px] py-10',
         )}
       >
         {showSpinner ? (
@@ -68,11 +89,9 @@ export function AIInsightCard({ title, onAnalyze, disabled }: Props) {
               <p>Gemini가 분석 중입니다...</p>
             </div>
           </div>
-        ) : result ? (
+        ) : (
           <AIReportCard result={result} />
-        ) : showSkeleton ? (
-          <div className="h-full w-full bg-muted/40 animate-pulse rounded-lg" />
-        ) : null}
+        )}
       </CardContent>
     </Card>
   );

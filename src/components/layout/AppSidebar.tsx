@@ -37,36 +37,50 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   ];
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader className="px-4 py-4 text-xl font-semibold tracking-tight">
-        Portfolio App
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {navItems.map(({ label, path, icon: Icon }) => {
-            const isActive =
-              pathname === path || pathname.startsWith(path + '/');
-            return (
-              <SidebarMenuItem key={path}>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to={path}
-                    className={cn(
-                      'flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-                      isActive
-                        ? 'bg-primary/8 text-primary font-semibold rounded-md'
-                        : 'hover:bg-primary/30',
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{label}</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
-      </SidebarContent>
+    <Sidebar {...props} className="h-full min-h-screen flex flex-col">
+      <div className="flex flex-1 flex-col justify-between">
+        {/* 상단 */}
+        <div>
+          <SidebarHeader className="px-4 pt-6 pb-2 text-2xl font-bold tracking-tight text-primary">
+            금쪽이
+          </SidebarHeader>
+          <div className="px-4 pb-4 text-sm text-muted-foreground">
+            똑똑한 자산 관리 앱
+          </div>
+
+          <SidebarContent>
+            <SidebarMenu className="space-y-1">
+              {navItems.map(({ label, path, icon: Icon }) => {
+                const isActive =
+                  pathname === path || pathname.startsWith(path + '/');
+                return (
+                  <SidebarMenuItem key={path}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={path}
+                        className={cn(
+                          'flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+                          isActive
+                            ? 'bg-primary/10 text-primary font-semibold'
+                            : 'hover:bg-muted',
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{label}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarContent>
+        </div>
+
+        {/* 하단 푸터 (진짜 아래) */}
+        <div className="px-4 py-3 text-[11px] text-muted-foreground">
+          © 2025 금쪽이 | v0.0.1
+        </div>
+      </div>
     </Sidebar>
   );
 }
