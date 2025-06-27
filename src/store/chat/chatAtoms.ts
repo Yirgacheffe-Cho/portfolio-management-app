@@ -8,7 +8,11 @@ export type ChatMessage = {
   createdAt: string;
 };
 
-// 메시지 atom을 id와 함께 관리
-export const chatMessageAtomsAtom = atom<
-  { id: string; atom: ReturnType<typeof atom<ChatMessage>> }[]
->([]);
+export const chatMessagesAtom = atom<ChatMessage[]>([]);
+
+export const getTypingIndicatorMessage = (): ChatMessage => ({
+  id: '__typing__',
+  role: 'assistant',
+  content: '...',
+  createdAt: new Date().toISOString(),
+});

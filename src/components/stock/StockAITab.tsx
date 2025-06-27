@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { selectedTickerAtom } from '@/store/stock/selectedTickerAtom';
 import { isAIAnalyzedAtom } from '@/store/stock/aiInsightAtom';
 import { AIInsightCard } from '@/components/common/AIInsightCard';
-import { StockChatPanel } from '@/components/stock/StockChatPanel';
+import { StockChatPanel } from '@components/chat/StockChatPanel';
 import { Button } from '@/components/ui/button';
 import { TabsContent } from '@/components/ui/tabs';
 
@@ -38,7 +38,6 @@ export function StockAITab({ handleAnalyze }: Props) {
           </Button>
         </div>
       )}
-
       {/* 버튼이 눌렸을 때만 채팅 UI 출력 */}
       {showChat && (
         <div className="mt-4">

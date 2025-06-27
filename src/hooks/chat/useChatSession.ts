@@ -1,38 +1,52 @@
 // hooks/chat/useChatSession.ts
 import { useAtom } from 'jotai';
-import { atom } from 'jotai';
 import { v4 as uuidv4 } from 'uuid';
-import { chatMessageAtomsAtom, type ChatMessage } from '@/store/chat/chatAtoms';
+import { chatMessagesAtom, type ChatMessage } from '@/store/chat/chatAtoms';
 
+/**
+ * 채팅 세션 훅
+ * 메시지 상태는 배열로 관리하며, 사용자/AI 메시지를 추가하거나 초기화할 수 있다.
+ */
 export function useChatSession() {
-  const [messageAtoms, setMessageAtoms] = useAtom(chatMessageAtomsAtom);
+  const [messages, setMessages] = useAtom(chatMessagesAtom);
 
+  /**
+   * 사용자 메시지 추가
+   * @param content 입력된 텍스트
+   */
   const sendUserMessage = (content: string) => {
     const id = uuidv4();
-    const msgAtom = atom<ChatMessage>({
+    const newMessage: ChatMessage = {
       id,
       role: 'user',
       content,
       createdAt: new Date().toISOString(),
-    });
-    setMessageAtoms((prev) => [...prev, { id, atom: msgAtom }]);
+    };
+    setMessages((prev) => [...prev, newMessage]);
   };
 
+  /**
+   * AI 응답 메시지 추가
+   * @param content 생성된 응답 텍스트
+   */
   const appendAssistantMessage = (content: string) => {
     const id = uuidv4();
-    const msgAtom = atom<ChatMessage>({
+    const newMessage: ChatMessage = {
       id,
       role: 'assistant',
       content,
       createdAt: new Date().toISOString(),
-    });
-    setMessageAtoms((prev) => [...prev, { id, atom: msgAtom }]);
+    };
+    setMessages((prev) => [...prev, newMessage]);
   };
 
-  const clearMessages = () => setMessageAtoms([]);
+  /**
+   * 전체 메시지 초기화
+   */
+  const clearMessages = () => setMessages([]);
 
   return {
-    messageAtoms,
+    messages,
     sendUserMessage,
     appendAssistantMessage,
     clearMessages,

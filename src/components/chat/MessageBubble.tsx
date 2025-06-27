@@ -1,30 +1,33 @@
-import { useAtomValue } from 'jotai';
-import type { Atom } from 'jotai';
 import type { ChatMessage } from '@/store/chat/chatAtoms';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { TypingDots } from './TypingDots';
 import { memo } from 'react';
 import 'highlight.js/styles/github-dark.css';
 
-function MessageBubbleComponent({
-  messageAtom,
-}: {
-  messageAtom: Atom<ChatMessage>;
-}) {
-  const msg = useAtomValue(messageAtom);
-  console.log('💬 message content:', msg);
+function MessageBubbleComponent({ message }: { message: ChatMessage }) {
+  console.log('💬 message content:', message);
+  if (message.id === '__typing__') {
+    return (
+      <div className="mb-2 flex justify-start">
+        <div className="px-3 py-2 rounded-lg bg-muted text-muted-foreground text-sm shadow max-w-[80%]">
+          <TypingDots />
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       className={cn(
         'mb-2 flex',
-        msg.role === 'user' ? 'justify-end' : 'justify-start',
+        message.role === 'user' ? 'justify-end' : 'justify-start',
       )}
     >
       <div
         className={cn(
           'px-3 py-2 rounded-lg text-sm shadow max-w-[80%]',
-          msg.role === 'user'
+          message.role === 'user'
             ? 'bg-primary text-white'
             : 'bg-muted text-muted-foreground',
         )}
@@ -41,6 +44,16 @@ function MessageBubbleComponent({
                   {children}
                 </h2>
               ),
+              /*************  ✨ Windsurf Command ⭐  *************/
+              /**
+               * Renders a level 3 heading with specific styling.
+               * The heading is styled with a small font size, semi-bold font weight,
+               * and margin applied on top and bottom.
+               *
+               * @param children - The content to be displayed within the heading.
+               */
+
+              /*******  4911a30b-d5c5-4fac-82db-107730b8ab01  *******/
               h3: ({ children }) => (
                 <h3 className="text-sm font-semibold mt-4 mb-1">{children}</h3>
               ),
@@ -88,7 +101,7 @@ function MessageBubbleComponent({
               ),
             }}
           >
-            {msg.content}
+            {message.content}
           </ReactMarkdown>
         </div>
       </div>
