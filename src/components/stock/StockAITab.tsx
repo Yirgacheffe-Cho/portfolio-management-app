@@ -1,7 +1,8 @@
 // components/stock/StockAITab.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { selectedTickerAtom } from '@/store/stock/selectedTickerAtom';
+import { aiInsightResultAtom } from '@/store/stock/aiInsightAtom';
 import { isAIAnalyzedAtom } from '@/store/stock/aiInsightAtom';
 import { AIInsightCard } from '@/components/common/AIInsightCard';
 import { StockChatPanel } from '@components/chat/StockChatPanel';
@@ -15,8 +16,13 @@ type Props = {
 export function StockAITab({ handleAnalyze }: Props) {
   const selected = useAtomValue(selectedTickerAtom);
   const analyzed = useAtomValue(isAIAnalyzedAtom);
+  const insight = useAtomValue(aiInsightResultAtom);
   const [showChat, setShowChat] = useState(false);
-
+  useEffect(() => {
+    if (!insight) {
+      setShowChat(false);
+    }
+  }, [insight]);
   return (
     <TabsContent value="ai">
       <AIInsightCard
