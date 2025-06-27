@@ -1,7 +1,8 @@
 // components/ai/AIInsightCard.tsx
 
-import { useEffect, useTransition } from 'react';
+import { useEffect, useTransition, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { selectedTickerAtom } from '@/store/stock/selectedTickerAtom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AIReportCard } from '@/components/report/AIReportCard';
@@ -28,21 +29,28 @@ export function AIInsightCard({
   const result = useAtomValue(aiInsightResultAtom); // 읽기 전용 분석 결과
   const analyzed = useAtomValue(isAIAnalyzedAtom); // 분석 완료 여부
   const setResult = useSetAtom(aiInsightResultAtom); // 분석 결과 갱신용 setter
+  const selected = useAtomValue(selectedTickerAtom);
+  const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (resetOnDisabledChange) setResult('');
   }, [disabled, resetOnDisabledChange, setResult]);
-
+  // ✅ 종목이 바뀌면 분석 상태 리셋
+  useEffect(() => {
+    setIsAnalyzed(false);
+  }, [selected?.symbol]);
   const handleClick = () => {
     startTransition(async () => {
+      setIsAnalyzed(false);
+      setResult('');
       const res = await onAnalyze();
       setResult(res);
+      setIsAnalyzed(true);
     });
   };
 
   const showSpinner = isPending;
-  const showSkeleton = disabled && !analyzed;
 
   return (
     <Card className="w-full">
@@ -53,14 +61,14 @@ export function AIInsightCard({
         </CardTitle>
         <Button
           onClick={handleClick}
-          disabled={disabled || showSpinner || analyzed}
+          disabled={disabled || showSpinner || isAnalyzed}
         >
           {showSpinner ? (
             <span className="flex items-center gap-2">
               <span className="animate-spin h-4 w-4 border-2 border-muted border-t-transparent rounded-full" />
               분석 중...
             </span>
-          ) : analyzed ? (
+          ) : isAnalyzed ? (
             '분석 완료'
           ) : (
             '분석하기'
@@ -70,7 +78,7 @@ export function AIInsightCard({
       <CardContent
         className={cn(
           'px-4 transition-all duration-300',
-          analyzed || showSkeleton ? 'h-[400px]' : 'min-h-[150px] py-10',
+          analyzed ? 'h-[400px]' : 'min-h-[150px] py-10',
         )}
       >
         {showSpinner ? (
@@ -80,11 +88,9 @@ export function AIInsightCard({
               <p>Gemini가 분석 중입니다...</p>
             </div>
           </div>
-        ) : analyzed ? (
+        ) : (
           <AIReportCard result={result} />
-        ) : showSkeleton ? (
-          <div className="h-full w-full bg-muted/40 animate-pulse rounded-lg" />
-        ) : null}
+        )}
       </CardContent>
     </Card>
   );
